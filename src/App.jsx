@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.jsx'
-import { Badge } from '@/components/ui/badge.jsx'
-import { Progress } from '@/components/ui/progress.jsx'
-import { Button } from '@/components/ui/button.jsx'
-import { AlertCircle, CheckCircle, Clock, Smartphone, Zap, Activity } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { CheckCircle, Clock, Smartphone, Zap, Activity } from 'lucide-react'
+import { MetricCard } from '@/components/MetricCard'
+import { TaskExecutionView } from '@/components/TaskExecutionView'
+import { DeviceStatusPanel } from '@/components/DeviceStatusPanel'
+import { EmptyState } from '@/components/EmptyState'
+import { DashboardSkeleton } from '@/components/DashboardSkeleton'
+import { TaskControlPanel } from '@/components/TaskControlPanel'
 import './App.css'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
@@ -12,6 +16,8 @@ function App() {
   const [systemStatus, setSystemStatus] = useState('active')
   const [devices, setDevices] = useState([])
   const [currentTask, setCurrentTask] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [metrics, setMetrics] = useState({
     tasksCompleted: 0,
     successRate: 0,
@@ -24,13 +30,16 @@ function App() {
 
   const fetchData = async () => {
     try {
-      const [devicesRes, tasksRes, metricsRes, activityRes, policiesRes] = await Promise.all([
+      setError(null)
+      const [devicesRes, tasksRes, metricsRes] = await Promise.all([
         fetch(`${API_BASE_URL}/devices`),
         fetch(`${API_BASE_URL}/tasks`),
-        fetch(`${API_BASE_URL}/metrics`),
-        fetch(`${API_BASE_URL}/activity`),
-        fetch(`${API_BASE_URL}/policies`)
+        fetch(`${API_BASE_URL}/metrics`)
       ])
+
+      if (!devicesRes.ok || !tasksRes.ok || !metricsRes.ok) {
+        throw new Error('Failed to fetch data')
+      }
 
       const devicesData = await devicesRes.json()
       const tasksData = await tasksRes.json()
@@ -65,14 +74,38 @@ function App() {
 
     } catch (error) {
       console.error('Failed to fetch data:', error)
+      setError('Failed to load dashboard data')
+    } finally {
+      setLoading(false)
     }
   }
 
   useEffect(() => {
     fetchData()
-    const interval = setInterval(fetchData, 5000) // Refresh every 5 seconds
+    const interval = setInterval(fetchData, 5000)
     return () => clearInterval(interval)
   }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <DashboardSkeleton />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background p-6 flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardContent className="p-8 text-center">
+            <h2 className="text-xl font-semibold text-destructive mb-2">Error</h2>
+            <p className="text-muted-foreground">{error}</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -127,6 +160,11 @@ function App() {
         />
       </div>
 
+      {/* Task Control Panel */}
+      <div className="mb-6">
+        <TaskControlPanel devices={devices} onTaskCreated={fetchData} />
+      </div>
+
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Current Task Execution */}
@@ -162,85 +200,6 @@ function App() {
     </div>
   )
 }
-
-// Reusable Metric Card Component
-const MetricCard = ({ title, value, icon, trend }) => (
-  <Card className="shadow-md hover:shadow-lg transition-shadow border-primary/20">
-    <CardContent className="p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-muted-foreground mb-1">{title}</p>
-          <p className="text-2xl font-bold text-foreground">{value}</p>
-          <p className="text-xs text-muted-foreground mt-1">{trend}</p>
-        </div>
-        {icon}
-      </div>
-    </CardContent>
-  </Card>
-)
-
-// Task Execution Component with Real-Time Progress
-const TaskExecutionView = ({ task }) => (
-  <div className="space-y-4">
-    <div className="flex items-center justify-between">
-      <h3 className="font-semibold text-lg">{task.description}</h3>
-      <Badge variant="outline" className="bg-accent">
-        Step {task.currentStep}/{task.totalSteps}
-      </Badge>
-    </div>
-    
-    <Progress value={(task.currentStep / task.totalSteps) * 100} className="h-2" />
-    
-    <div className="bg-muted rounded-lg p-4">
-      <p className="text-sm text-muted-foreground mb-2">Current Action:</p>
-      <p className="font-medium">{task.currentAction}</p>
-    </div>
-    
-    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-      <span>Device: {task.deviceId}</span>
-      <span>•</span>
-      <span>Agent: {task.activeAgent}</span>
-      <span>•</span>
-      <span>Duration: {task.duration}s</span>
-    </div>
-  </div>
-)
-
-// Device Status Panel
-const DeviceStatusPanel = ({ devices }) => (
-  <div className="space-y-3">
-    {devices.length === 0 ? (
-      <p className="text-muted-foreground text-center py-8">No devices connected</p>
-    ) : (
-      devices.map((device) => (
-        <div key={device.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-          <div>
-            <p className="font-medium">{device.id}</p>
-            <p className="text-sm text-muted-foreground">{device.platform} • {device.status}</p>
-          </div>
-          <Badge 
-            variant={device.status === 'active' ? 'default' : 'secondary'}
-            className="capitalize"
-          >
-            {device.status}
-          </Badge>
-        </div>
-      ))
-    )}
-  </div>
-)
-
-// Empty State Component
-const EmptyState = () => (
-  <div className="text-center py-12">
-    <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-    <h3 className="font-semibold text-foreground mb-2">No Active Tasks</h3>
-    <p className="text-muted-foreground mb-6">Start a new automation task to see live execution</p>
-    <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-      Start New Task
-    </Button>
-  </div>
-)
 
 export default App
 
