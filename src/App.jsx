@@ -119,7 +119,7 @@ function App() {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">
+            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent mb-2 animate-fade-in">
               AutoRL Control Center
             </h1>
             <p className="text-muted-foreground">
