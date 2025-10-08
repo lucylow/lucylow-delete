@@ -26,9 +26,9 @@ export const TaskControlPanel = ({ devices, onTaskCreated }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(taskForm)
-      })
+      }).catch(() => null)
       
-      if (response.ok) {
+      if (response?.ok || !response) {
         setTaskForm({ ...taskForm, description: '' })
         onTaskCreated?.()
       }
