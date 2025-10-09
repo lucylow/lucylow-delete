@@ -9,12 +9,28 @@ from .llm_adapter import LLMSandbox
 from . import mock_api
 from .device_manager import AsyncDeviceManager
 from .store import record_user_task
+from prometheus_client import make_asgi_app, start_http_server
+from starlette.middleware.wsgi import WSGIMiddleware
 
 app = FastAPI(title="Agent Service")
 app.include_router(mock_api.router)
 
 # Initialize a shared AsyncDeviceManager instance for scheduling
 device_manager = AsyncDeviceManager(max_concurrent=4)
+
+# Mount Prometheus ASGI app at /metrics
+try:
+    metrics_app = make_asgi_app()
+    app.mount("/metrics", WSGIMiddleware(metrics_app))
+except Exception:
+    # make_asgi_app may not be available in older prometheus-client versions
+    pass
+
+# Optionally start a standalone Prometheus metrics server on 9000 (useful in Docker)
+try:
+    start_http_server(9000)
+except Exception:
+    pass
 
 # Enable CORS for frontend dev servers (adjust in production)
 app.add_middleware(

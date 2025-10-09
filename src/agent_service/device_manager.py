@@ -2,9 +2,17 @@ import asyncio
 import random
 import logging
 from typing import List, Dict, Optional
+from prometheus_client import Counter, Histogram, Gauge
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+
+# Prometheus metrics
+TASKS_TOTAL = Counter('autorl_tasks_total', 'Total number of tasks scheduled')
+TASKS_SUCCESS = Counter('autorl_tasks_success_total', 'Total successful tasks')
+TASKS_FAILURE = Counter('autorl_tasks_failure_total', 'Total failed tasks')
+TASK_DURATION = Histogram('autorl_task_duration_seconds', 'Task execution duration seconds')
+DEVICES_AVAILABLE = Gauge('autorl_devices_available', 'Number of available devices')
 
 
 class AsyncDeviceManager:
@@ -68,11 +76,18 @@ class AsyncDeviceManager:
 
         # Acquire concurrency slot
         async with self._semaphore:
+            TASKS_TOTAL.inc()
+            DEVICES_AVAILABLE.set(len(self.get_available_devices()))
             # mark device busy
             prev_status = device.get("status")
             device["status"] = "busy"
             try:
-                result = await self._execute_with_retries(device, instruction, timeout, retries)
+                with TASK_DURATION.time():
+                    result = await self._execute_with_retries(device, instruction, timeout, retries)
+                if result.get('success'):
+                    TASKS_SUCCESS.inc()
+                else:
+                    TASKS_FAILURE.inc()
                 return result
             finally:
                 # restore device status (if device still exists)
