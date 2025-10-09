@@ -1,12 +1,24 @@
 from fastapi import FastAPI, HTTPException, Depends, Request
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
 import uuid
 from .auth import get_user
 from .plugin_manager import PluginManager
 from .llm_adapter import LLMSandbox
+from . import mock_api
 
 app = FastAPI(title="Agent Service")
+app.include_router(mock_api.router)
+
+# Enable CORS for frontend dev servers (adjust in production)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173", "*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Mock DB
 users_db = {
