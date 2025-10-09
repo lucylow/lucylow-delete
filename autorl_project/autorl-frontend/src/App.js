@@ -16,6 +16,24 @@ import Documentation from './pages/Documentation';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
 
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+
+// Import page components
+import Navigation from './components/Navigation';
+import LandingPage from './pages/LandingPage';
+import Dashboard from './pages/Dashboard';
+import DeviceManager from './pages/DeviceManager';
+import TaskExecution from './pages/TaskExecution';
+import AITraining from './pages/AITraining';
+import Analytics from './pages/Analytics';
+import Marketplace from './pages/Marketplace';
+import Documentation from './pages/Documentation';
+import Settings from './pages/Settings';
+import Profile from './pages/Profile';
+
 // AutoRL theme configuration
 const autorlTheme = createTheme({
   palette: {
