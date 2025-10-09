@@ -1,7 +1,7 @@
 // ...existing imports above
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -54,7 +54,6 @@ function App() {
   return (
     <ThemeProvider theme={autorlTheme}>
       <CssBaseline />
-      <Router>
         <div className="App">
           <Navigation />
           <Routes>
@@ -70,7 +69,6 @@ function App() {
             <Route path="/profile" element={<Profile />} />
           </Routes>
         </div>
-      </Router>
     </ThemeProvider>
   );
 }

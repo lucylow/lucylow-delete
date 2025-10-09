@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, HashRouter } from 'react-router-dom';
 import './index.css';
-import App from './App.jsx';
+import App from './App';
 
 // Some static hosts (including static S3 hosts or certain app platforms) don't
 // rewrite unknown paths to index.html. In that case BrowserRouter won't work
