@@ -7,9 +7,14 @@ from .auth import get_user
 from .plugin_manager import PluginManager
 from .llm_adapter import LLMSandbox
 from . import mock_api
+from .device_manager import AsyncDeviceManager
+from .store import record_user_task
 
 app = FastAPI(title="Agent Service")
 app.include_router(mock_api.router)
+
+# Initialize a shared AsyncDeviceManager instance for scheduling
+device_manager = AsyncDeviceManager(max_concurrent=4)
 
 # Enable CORS for frontend dev servers (adjust in production)
 app.add_middleware(
@@ -19,12 +24,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Mock DB
-users_db = {
-    "alice": {"subscription": "premium", "quota": 100, "tasks_used": 42, "history": []},
-    "bob":   {"subscription": "basic", "quota": 10,  "tasks_used": 9,  "history": []}
-}
 
 TASK_PRICE = 0.10
 
@@ -40,27 +39,33 @@ class TaskRequest(BaseModel):
 
 
 @app.post("/api/v1/execute")
-def execute_task(req: TaskRequest, request: Request, user=Depends(get_user)):
-    # user is the dict from users_db
-    if user["tasks_used"] >= user["quota"]:
+async def execute_task(req: TaskRequest, request: Request, user=Depends(get_user)):
+    # get_user now returns (username, user_record)
+    username, user_record = user
+    if user_record["tasks_used"] >= user_record["quota"]:
         raise HTTPException(status_code=402, detail="Quota exceeded. Upgrade required.")
-    user["tasks_used"] += 1
-    task_id = str(uuid.uuid4())
-    record = {"task_id": task_id, "instruction": req.instruction}
-    user["history"].append(record)
-    return {"task_id": task_id, "status": "queued", "msg": f"1 task charged (${TASK_PRICE:.2f} if pay-per-use)"}
+    # schedule async task on a device
+    schedule_res = await device_manager.schedule_task(req.instruction, device_id=req.device_id, timeout=60, retries=2)
+    # billing/usage
+    user_record["tasks_used"] += 1
+    task_id = schedule_res.get("result", {}).get("task_id") or str(uuid.uuid4())
+    record = {"task_id": task_id, "instruction": req.instruction, "schedule_res": schedule_res}
+    record_user_task(username, record)
+    return {"task_id": task_id, "status": "scheduled", "schedule_res": schedule_res, "msg": f"1 task charged (${TASK_PRICE:.2f} if pay-per-use)"}
 
 
 @app.post("/api/v1/subscription/upgrade")
 def upgrade(request: Request, user=Depends(get_user)):
-    user["subscription"] = "premium"
-    user["quota"] = 100
-    return {"status": "upgraded", "quota": user["quota"]}
+    username, user_record = user
+    user_record["subscription"] = "premium"
+    user_record["quota"] = 100
+    return {"status": "upgraded", "quota": user_record["quota"]}
 
 
 @app.get("/api/v1/user/history")
 def history(request: Request, user=Depends(get_user)):
-    return {"history": user.get("history", [])}
+    username, user_record = user
+    return {"history": user_record.get("history", [])}
 
 
 # Natural language endpoint using a pluggable LLM adapter
@@ -92,3 +97,10 @@ def run_plugin(plugin_name: str, payload: Dict[str, Any], request: Request, user
     if not result.get("success"):
         raise HTTPException(status_code=404, detail=result.get("msg"))
     return result
+
+
+@app.post("/api/v1/plugins/purchase/{plugin_name}")
+def purchase_plugin(plugin_name: str, request: Request, user=Depends(get_user)):
+    username, user_record = user
+    # mock purchase flow: deduct quota or mark purchase -- replace with a real payment flow
+    return {"success": True, "plugin": plugin_name, "owner": username}
