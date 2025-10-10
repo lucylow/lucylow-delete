@@ -17,6 +17,7 @@ import Marketplace from './pages/Marketplace';
 import Documentation from './pages/Documentation';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
+import BlockchainEnhancedDashboard from './pages/BlockchainEnhancedDashboard';
 
 // AutoRL theme configuration
 const autorlTheme = createTheme({
@@ -63,6 +64,7 @@ function App() {
             <Route path="/tasks" element={<TaskExecution />} />
             <Route path="/ai-training" element={<AITraining />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/blockchain" element={<BlockchainEnhancedDashboard />} />
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/docs" element={<Documentation />} />
             <Route path="/settings" element={<Settings />} />
