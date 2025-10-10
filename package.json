@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "build:frontend": "cd autorl_project/autorl-frontend && pnpm install --frozen-lockfile --prefer-offline && pnpm run build",
+    "build": "pnpm run build:frontend",
     "dev": "vite",
-    "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview"
