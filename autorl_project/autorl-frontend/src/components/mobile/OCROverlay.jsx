@@ -61,3 +61,4 @@ export default function OCROverlay({ elementsRef = { current: {} }, showLabels =
     </div>
   );
 }
+
