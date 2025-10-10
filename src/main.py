@@ -19,6 +19,7 @@ from src.config import config
 from src.security.pii_manager import security_manager, setup_secure_logging
 from src.orchestrator import orchestrator
 from src.device_manager import device_pool
+from src.omh_integration import router as omh_router
 
 # Validate critical environment variables at startup
 missing_vars = config.validate_required_vars()
@@ -55,6 +56,9 @@ app.add_middleware(
 # Prometheus metrics
 metrics_app = make_asgi_app()
 app.mount("/metrics", metrics_app)
+
+# Include OMH integration routes
+app.include_router(omh_router)
 
 # Initialize metrics
 task_counter = Counter('autorl_tasks_total', 'Total tasks executed')

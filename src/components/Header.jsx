@@ -94,7 +94,8 @@ const Header = ({ isScrolled }) => {
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div
-          className="md:hidden fixed inset-0 bg-black/50 z-[-1]"
+          className="md:hidden fixed inset-0 bg-black/50 top-20"
+          style={{ zIndex: -1 }}
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
@@ -103,5 +104,6 @@ const Header = ({ isScrolled }) => {
 };
 
 export default Header;
+
 
 

@@ -12,7 +12,7 @@
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "recharts": "^2.8.0",
-    "react-use": "^22.10.0"
+    "react-use": "^17.4.0"
   },
   "scripts": {
     "start": "react-scripts start",
