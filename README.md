@@ -1,3 +1,86 @@
+# AutoRL — Open Mobile Hub AI Agent (Demo)
+
+This repository contains a minimal, production-minded demo of an AutoRL agent
+for mobile automation. It provides a fast path for competition demos and a
+clean scaffold for extending to production: perception, planning, execution,
+learning, plugin registry, Prometheus metrics, and a tiny live dashboard.
+
+This README highlights how to run the demo locally, build Docker images,
+and deploy previews (lovable/netlify). It also documents the key code
+locations so you can paste/iterate quickly.
+
+---
+
+Quickstart (dev)
+1. Create a Python 3.11 virtualenv and activate it.
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+2. Run the API (uvicorn)
+
+```powershell
+uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+3. Open the dashboard
+
+- Live dashboard (static): open `dashboard/public/index.html` in your browser, or serve with a static server.
+- Or use the WS endpoint via `ws://localhost:8000/ws/metrics` for the live dashboard.
+
+Run tests
+
+```powershell
+pip install pytest
+pytest -q
+```
+
+Docker / Compose
+
+Build and run via docker-compose (dev mount enabled):
+
+```powershell
+docker compose up --build
+```
+
+This starts the API on port 8000. The backend serves the `/metrics` endpoint
+for Prometheus scraping.
+
+Prometheus / Grafana
+
+- The project registers Prometheus counters/gauges at `/metrics` (prometheus_client). Add a Grafana dashboard that reads `autorl_tasks_total`, `autorl_task_latency_seconds`, and `autorl_active_tasks`.
+
+lovable preview / static hosting notes
+
+- Lovable previews often serve from a nested path under `/projects/<id>/`. To ensure assets and routing work:
+  - `autorl_project/autorl-frontend/vite.config.js` sets `base: './'` so built assets are relative.
+  - The FastAPI app exposes a websocket at `/ws/metrics` and a static dashboard under `dashboard/public`.
+  - Ensure you click "Publish" in the lovable UI after pushing commits so the preview rebuilds with the latest code.
+
+Files & components
+- `src/main.py` — FastAPI app + websocket broadcaster + metrics endpoint
+- `src/agents/*` — orchestrator, perception, planning, execution, learning
+- `src/policy/*` — policy registry & mock updates
+- `src/plugins/*` — plugin registry; drop YAML specs into `plugins/` and they will be loaded
+- `dashboard/public` — static dashboard HTML/JS connecting to `/ws/metrics`
+- `Dockerfile`, `docker-compose.yml` — quick dev container
+
+Extending the demo
+- Replace mocks in `src/tools/core_tools.py` with Appium/AOSP device interactions.
+- Replace `PlanningAgent` mocks with an LLM wrapper and structured prompts.
+- Hook `LearningAgent` into a real replay buffer and RL trainer (stable-baselines3 / Torch).
+- Add a plugin base class and more plugin entrypoints (on_perception, on_plan, on_execute).
+
+Security & production notes
+- Add OAuth2/JWT and secure websockets.
+- Sanitize logs for PII (logger can be extended to scrub text/image content).
+- Use a real datastore for `AIDataPipeline` (S3 + Postgres + object store for screenshots).
+
+Contact / Support
+If you want me to commit additional demo artifacts (e.g., a Node.js ws server for deterministic replay, NotFound route + `_redirects`, or convert the static dashboard to a React app), tell me which and I'll add them.
 # AutoRL AI Agent: Production-Ready Mobile Automation
 
 [![License](https://img.shields.io/badge/License-MIT-blues://img.shields.io/badge/Docker-Ready-blue.petition](https://img.shields.io/badge/Open%20Mobile%20Hub-Competition%20Entry-orange

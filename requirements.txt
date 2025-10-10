@@ -1,5 +1,8 @@
 
 
+Pillow
+numpy
+pytest
 pytesseract
 Flask-Cors
 python-docx
