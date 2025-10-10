@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
 import uuid
 from .auth import get_user
+from .omh_auth import get_omh_user, get_omh_user_with_location, require_role, omh_client
 from .plugin_manager import PluginManager
 from .llm_adapter import LLMSandbox
 from . import mock_api
@@ -120,3 +121,165 @@ def purchase_plugin(plugin_name: str, request: Request, user=Depends(get_user)):
     username, user_record = user
     # mock purchase flow: deduct quota or mark purchase -- replace with a real payment flow
     return {"success": True, "plugin": plugin_name, "owner": username}
+
+
+# ============================================================================
+# OMH Integration Endpoints
+# ============================================================================
+
+@app.post("/api/v1/auth/omh/login")
+async def omh_login(username: str, password: str):
+    """
+    Login with OMH OAuth credentials
+    Returns access token for subsequent requests
+    """
+    try:
+        auth_data = omh_client.authenticate_user(username, password)
+        return {
+            "success": True,
+            "access_token": auth_data["access_token"],
+            "token_type": auth_data["token_type"],
+            "expires_in": auth_data["expires_in"],
+            "scope": auth_data["scope"]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=str(e))
+
+
+@app.get("/api/v1/user/profile/omh")
+async def get_omh_profile(user=Depends(get_omh_user)):
+    """
+    Get authenticated user profile via OMH
+    Use: Authorization: Bearer <omh_token>
+    """
+    username, user_record = user
+    return {
+        "username": username,
+        "profile": user_record,
+        "auth_method": user_record.get("auth_method", "unknown")
+    }
+
+
+@app.post("/api/v1/execute/location-aware")
+async def execute_location_aware_task(
+    req: TaskRequest,
+    request: Request,
+    user_with_location=Depends(get_omh_user_with_location)
+):
+    """
+    Execute a task with location context from OMH
+    Automatically includes user location in task execution
+    """
+    username, user_record, location = user_with_location
+    
+    # Check quota
+    if user_record["tasks_used"] >= user_record["quota"]:
+        raise HTTPException(status_code=402, detail="Quota exceeded. Upgrade required.")
+    
+    # Add location context to task parameters
+    task_params = req.parameters or {}
+    if location:
+        task_params["location_context"] = location.get("location")
+        task_params["location_address"] = location.get("location", {}).get("address")
+    
+    # Schedule task
+    schedule_res = await device_manager.schedule_task(
+        req.instruction,
+        device_id=req.device_id,
+        timeout=60,
+        retries=2
+    )
+    
+    # Record task
+    user_record["tasks_used"] += 1
+    task_id = schedule_res.get("result", {}).get("task_id") or str(uuid.uuid4())
+    record = {
+        "task_id": task_id,
+        "instruction": req.instruction,
+        "schedule_res": schedule_res,
+        "location_context": location
+    }
+    record_user_task(username, record)
+    
+    return {
+        "task_id": task_id,
+        "status": "scheduled",
+        "schedule_res": schedule_res,
+        "location_context": location,
+        "msg": f"1 task charged (${TASK_PRICE:.2f} if pay-per-use)"
+    }
+
+
+@app.get("/api/v1/location/current")
+async def get_current_location(user=Depends(get_omh_user_with_location)):
+    """Get user's current location from OMH"""
+    username, user_record, location = user
+    
+    if not location:
+        raise HTTPException(
+            status_code=404,
+            detail="Location not available. Ensure OMH authentication is used."
+        )
+    
+    return {
+        "username": username,
+        "location": location.get("location"),
+        "timestamp": location.get("timestamp")
+    }
+
+
+@app.get("/api/v1/location/nearby-tasks")
+async def get_nearby_tasks(user=Depends(get_omh_user_with_location)):
+    """
+    Get tasks available near user's current location
+    Example use case: Find nearby restaurants, stores, etc.
+    """
+    username, user_record, location = user
+    
+    if not location:
+        return {"tasks": [], "message": "Location not available"}
+    
+    loc_data = location.get("location", {})
+    address = loc_data.get("address", "Unknown")
+    
+    # Mock nearby tasks based on location
+    nearby_tasks = [
+        {
+            "id": "task_001",
+            "name": f"Find restaurants near {address}",
+            "type": "search",
+            "distance": "0.5 km"
+        },
+        {
+            "id": "task_002",
+            "name": f"Book appointment at {address}",
+            "type": "booking",
+            "distance": "1.2 km"
+        },
+        {
+            "id": "task_003",
+            "name": f"Check store hours near {address}",
+            "type": "information",
+            "distance": "0.8 km"
+        }
+    ]
+    
+    return {
+        "location": loc_data,
+        "tasks": nearby_tasks,
+        "count": len(nearby_tasks)
+    }
+
+
+@app.post("/api/v1/admin/reset-quota", dependencies=[Depends(require_role("admin"))])
+async def admin_reset_quota(username: str):
+    """
+    Admin-only endpoint to reset user quota
+    Requires admin role in OMH authentication
+    """
+    # This would update your user database
+    return {
+        "success": True,
+        "message": f"Quota reset for user: {username}",
+        "admin_action": True
+    }

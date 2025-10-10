@@ -51,6 +51,25 @@ services:
       - "80:80"
     depends_on:
       - backend
+      - omh-mock-server
+    environment:
+      - VITE_OMH_API_BASE=http://omh-mock-server:8001
+      - VITE_AUTORL_API_BASE=http://backend:5000
+    networks:
+      - autorl-network
+
+  omh-mock-server:
+    build:
+      context: ../src/agent_service
+      dockerfile: Dockerfile.omh-mock
+    ports:
+      - "8001:8001"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     networks:
       - autorl-network
 

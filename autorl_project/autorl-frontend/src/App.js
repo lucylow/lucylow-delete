@@ -18,6 +18,10 @@ import Documentation from './pages/Documentation';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
 import BlockchainEnhancedDashboard from './pages/BlockchainEnhancedDashboard';
+import OMHIntegrationPage from './pages/OMHIntegrationPage';
+
+// Import OMH Auth Context
+import { OMHAuthProvider } from './contexts/OMHAuthContext';
 
 // AutoRL theme configuration
 const autorlTheme = createTheme({
@@ -55,6 +59,7 @@ function App() {
   return (
     <ThemeProvider theme={autorlTheme}>
       <CssBaseline />
+      <OMHAuthProvider>
         <div className="App">
           <Navigation />
           <Routes>
@@ -66,11 +71,13 @@ function App() {
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/blockchain" element={<BlockchainEnhancedDashboard />} />
             <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/omh-integration" element={<OMHIntegrationPage />} />
             <Route path="/docs" element={<Documentation />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/profile" element={<Profile />} />
           </Routes>
         </div>
+      </OMHAuthProvider>
     </ThemeProvider>
   );
 }
