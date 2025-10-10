@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, HashRouter } from 'react-router-dom';
 import './index.css';
@@ -35,7 +35,7 @@ window.addEventListener('unhandledrejection', (ev) => {
 // HashRouter when served from a nested path or common preview hostnames.
 const hostname = (typeof window !== 'undefined' && window.location && window.location.hostname) ? window.location.hostname : '';
 const pathname = (typeof window !== 'undefined' && window.location && window.location.pathname) ? window.location.pathname : '/';
-const isStaticHost = hostname.includes('lovable') || hostname.endsWith('github.io') || pathname.startsWith('/projects/') || pathname !== '/';
+const isStaticHost = hostname.includes('lovable') || hostname.endsWith('github.io') || pathname.startsWith('/projects/');
 const Router = isStaticHost ? HashRouter : BrowserRouter;
 
 // Simple ErrorBoundary so React render errors are visible

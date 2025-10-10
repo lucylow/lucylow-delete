@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import ThoughtBubbles from './ThoughtBubbles';
 
 const WS_URL = (process.env.REACT_APP_WS_URL) ? process.env.REACT_APP_WS_URL : 'ws://localhost:5000/ws';
-const API_BASE = (process.env.REACT_APP_API_URL) ? process.env.REACT_APP_API_URL : 'http://localhost:5000';
+// Default API base for demo points to the local mock server at port 4000
+const API_BASE = (process.env.REACT_APP_API_URL) ? process.env.REACT_APP_API_URL : 'http://localhost:4000';
 
 export default function Dashboard(){
   const [events, setEvents] = useState([]);
@@ -34,7 +35,22 @@ export default function Dashboard(){
   };
 
   const switchUI = () => {
-    setDevicePath(prev => prev === '/mock/mobile1' ? '/mock/mobile2' : '/mock/mobile1');
+    // Toggle local mock server variant so the iframe source updates
+    (async ()=>{
+      try{
+        const r = await fetch(`${API_BASE}/api/variant`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ variant: devicePath.includes('mobile1') ? 'mobile2' : 'mobile1' })});
+        const j = await r.json();
+        if(j.variant){
+          setDevicePath(j.variant === 'mobile2' ? '/mock/mobile' : '/mock/mobile');
+          // Force iframe reload by toggling a query param
+          const t = Date.now();
+          setDevicePath(prev => prev + `?t=${t}`);
+        }
+      }catch(e){
+        // fallback local toggle
+        setDevicePath(prev => prev === '/mock/mobile1' ? '/mock/mobile2' : '/mock/mobile1');
+      }
+    })();
   };
 
   return (
