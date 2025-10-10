@@ -22,17 +22,16 @@ export default function AttentionHeatmap({ elementsRef = { current: {} }, attent
           const rect = el.getBoundingClientRect();
           const rootRect = el.ownerDocument.documentElement.getBoundingClientRect();
           // relative to viewport (device canvas is within its own container)
+          const conf = attentionData[id] ?? Math.random()*0.4;
           arr.push({ 
             id, 
             left: rect.left, 
             top: rect.top, 
             w: rect.width, 
             h: rect.height, 
-            conf: attentionData[id] ?? Math.random() * 0.4 + 0.3 
+            conf 
           });
-        } catch (e) {
-          // Element might not be available yet
-        }
+        } catch (e) {}
       }
       setBoxes(arr);
     };
@@ -60,7 +59,7 @@ export default function AttentionHeatmap({ elementsRef = { current: {} }, attent
               boxShadow: `0 8px 30px ${color}`, 
               border: `2px solid rgba(0,227,255,${opacity})`, 
               mixBlendMode: 'screen',
-              animation: `pulse 2s ease-in-out infinite ${Math.random() * 2}s`
+              transition: 'all 0.3s ease'
             }} 
           />
         );

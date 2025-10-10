@@ -17,3 +17,4 @@ export default function DeviceSimulator({ children, scale = 0.95, style = {} }) 
 }
 
 
+

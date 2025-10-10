@@ -3,67 +3,17 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 220 15% 98%;
-    --foreground: 220 15% 10%;
-    --card: 0 0% 100%;
-    --card-foreground: 220 15% 10%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 10%;
-    --primary: 262 83% 58%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 15% 10%;
-    --muted: 220 14% 95%;
-    --muted-foreground: 220 10% 46%;
-    --accent: 262 83% 96%;
-    --accent-foreground: 262 83% 40%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 262 83% 58%;
-    --radius: 0.75rem;
-    --chart-1: 262 83% 58%;
-    --chart-2: 340 82% 52%;
-    --chart-3: 291 64% 42%;
-    --chart-4: 207 90% 54%;
-    --chart-5: 142 76% 36%;
-  }
-
-  .dark {
-    --background: 224 71% 4%;
-    --foreground: 213 31% 91%;
-    --card: 224 71% 6%;
-    --card-foreground: 213 31% 91%;
-    --popover: 224 71% 6%;
-    --popover-foreground: 213 31% 91%;
-    --primary: 263 70% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 222 47% 11%;
-    --secondary-foreground: 213 31% 91%;
-    --muted: 223 47% 11%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 263 70% 20%;
-    --accent-foreground: 263 70% 80%;
-    --destructive: 0 63% 50%;
-    --destructive-foreground: 213 31% 91%;
-    --border: 222 47% 14%;
-    --input: 222 47% 14%;
-    --ring: 263 70% 60%;
-    --chart-1: 263 70% 60%;
-    --chart-2: 340 75% 55%;
-    --chart-3: 291 64% 50%;
-    --chart-4: 207 90% 61%;
-    --chart-5: 142 76% 45%;
-  }
-  
-  * {
-    @apply border-border;
+  html {
+    @apply scroll-smooth;
   }
   
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply font-sans text-gray-900 overflow-x-hidden;
   }
 }
 
+@layer utilities {
+  .container-custom {
+    @apply w-[90%] max-w-7xl mx-auto px-4;
+  }
+}

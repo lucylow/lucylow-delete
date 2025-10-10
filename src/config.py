@@ -118,3 +118,4 @@ TESSERACT_CMD=/usr/bin/tesseract
 config = Config()
 
 
+
