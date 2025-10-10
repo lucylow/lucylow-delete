@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Box, Container, Typography, Card, CardContent, Grid, Button } from '@mui/material';
 import { TrendingUp, CheckCircle, Devices } from '@mui/icons-material';
+import LiveAgentActivity from '../components/dashboard/LiveAgentActivity';
+import PerformanceCharts from '../components/dashboard/PerformanceCharts';
 
 const Dashboard = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -25,41 +27,34 @@ const Dashboard = () => {
           Dashboard
         </Typography>
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={3}>
-            <Card>
-              <CardContent>
-                <TrendingUp color="primary" />
-                <Typography variant="h6">{systemStats.successRate}%</Typography>
-                <Typography variant="body2" color="text.secondary">Success Rate</Typography>
-              </CardContent>
-            </Card>
+          <Grid item xs={12} md={4}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <Card>
+                  <CardContent>
+                    <TrendingUp color="primary" />
+                    <Typography variant="h6">{systemStats.successRate}%</Typography>
+                    <Typography variant="body2" color="text.secondary">Success Rate</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12}>
+                <Card>
+                  <CardContent>
+                    <Devices color="secondary" />
+                    <Typography variant="h6">{systemStats.devicesOnline}</Typography>
+                    <Typography variant="body2" color="text.secondary">Devices Online</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12}>
+                <LiveAgentActivity />
+              </Grid>
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={3}>
-            <Card>
-              <CardContent>
-                <Devices color="secondary" />
-                <Typography variant="h6">{systemStats.devicesOnline}</Typography>
-                <Typography variant="body2" color="text.secondary">Devices Online</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <Card>
-              <CardContent>
-                <CheckCircle color="success" />
-                <Typography variant="h6">{systemStats.activeTasks}</Typography>
-                <Typography variant="body2" color="text.secondary">Active Tasks</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <Card>
-              <CardContent>
-                <TrendingUp color="warning" />
-                <Typography variant="h6">{systemStats.episodesToday}</Typography>
-                <Typography variant="body2" color="text.secondary">Episodes Today</Typography>
-              </CardContent>
-            </Card>
+
+          <Grid item xs={12} md={8}>
+            <PerformanceCharts />
           </Grid>
         </Grid>
         <Typography variant="h6" sx={{ mb: 2 }}>Recent Tasks</Typography>
