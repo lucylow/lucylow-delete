@@ -70,11 +70,59 @@ To get the AutoRL project up and running, you will need Docker and Docker Compos
     -   Click the "Start Agent" / "Stop Agent" button and verify that the status changes and log messages appear in the backend/agent logs.
 -   **Appium Integration:** The `ai-agent` and `backend` services are configured to connect to the `appium-server`. In a real scenario, you would need to have mobile emulators/simulators or physical devices connected and configured for Appium to interact with them. The current `main.py` has mock Appium interactions for demonstration purposes.
 
+## OMH Mock Server for Testing
+
+The project includes a comprehensive **Open Mobile Hub (OMH) Mock Server** for testing OAuth authentication and location services:
+
+### Quick Start
+
+```bash
+cd ../src/agent_service
+python omh_mock_server.py
+```
+
+The mock server will be available at `http://localhost:8001` with:
+- **API Docs**: http://localhost:8001/docs
+- **Mock Tokens**: http://localhost:8001/mock/tokens
+
+### Features
+
+- ✅ OAuth2 authentication flows (password, refresh token, JWT bearer)
+- ✅ Mock user profiles with roles and permissions
+- ✅ Location/Maps API simulation
+- ✅ Pre-configured test users and tokens
+- ✅ Interactive Swagger UI documentation
+
+### Integration Example
+
+```python
+from examples.omh_mock_integration_example import OMHMockClient
+
+# Authenticate
+client = OMHMockClient()
+client.login("alice.smith")
+
+# Get user profile
+profile = client.get_user_profile()
+
+# Get location data
+location = client.get_location()
+```
+
+### Running Examples
+
+```bash
+python examples/omh_mock_integration_example.py
+```
+
+For detailed documentation, see: `../src/agent_service/OMH_MOCK_SERVER_README.md`
+
 ## Limitations and Future Improvements
 
 -   **Mock Appium Interactions:** The `main.py` script currently simulates Appium interactions. For full functionality, a real Appium setup with connected devices/emulators is required.
 -   **Frontend-Backend Real-time Updates:** The frontend polls the backend every 5 seconds. For real-time updates, WebSockets could be implemented.
 -   **Full AI Agent Logic:** The AI agent logic in `main.py` is a simplified example. A complete implementation would involve integrating actual LLMs, vision models, and sophisticated RL policies.
 -   **Database Integration:** The backend uses in-memory data structures (`tasks_db`, `metrics_db`, `activity_log`). For persistence, a database (e.g., PostgreSQL, SQLite) would be integrated.
+-   **OMH Integration:** The mock server is for testing only. Production deployment requires actual OMH OAuth provider configuration.
 
 This comprehensive setup provides a strong foundation for further development and competition submission.
