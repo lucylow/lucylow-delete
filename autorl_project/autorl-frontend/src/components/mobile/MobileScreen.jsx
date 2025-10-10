@@ -242,3 +242,5 @@ const MobileScreen = forwardRef(({ initialApp = 'banking_v1', onAction, attentio
 });
 
 export default MobileScreen;
+
+

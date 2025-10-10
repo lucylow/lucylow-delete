@@ -295,3 +295,5 @@ class DeviceManagerPool:
 
 # Global device manager pool
 device_pool = DeviceManagerPool()
+
+

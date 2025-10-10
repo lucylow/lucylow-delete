@@ -116,3 +116,5 @@ TESSERACT_CMD=/usr/bin/tesseract
 
 # Global config instance
 config = Config()
+
+
