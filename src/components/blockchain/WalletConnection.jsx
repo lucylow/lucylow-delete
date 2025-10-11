@@ -3,10 +3,44 @@ import { useWeb3 } from '../../contexts/Web3Context';
 import NetworkSwitcher from './NetworkSwitcher';
 
 export default function WalletConnection(){
-  const { account, isConnected, connect, disconnect, error, isMetaMaskInstalled, balance, getNetworkName } = useWeb3();
+  const { account, isConnected, connect, disconnect, error, isMetaMaskInstalled, balance, getNetworkName, mockMode, toggleMockMode } = useWeb3();
   
   return (
     <div style={{display:'flex',flexDirection:'column',gap:8,alignItems:'flex-start',maxWidth:400}}>
+      {mockMode && (
+        <div style={{
+          color:'#1976d2',
+          background:'#e3f2fd',
+          padding:12,
+          borderRadius:8,
+          fontSize:14,
+          border:'1px solid #90caf9',
+          width:'100%'
+        }}>
+          <strong>🎭 Demo Mode Active</strong>
+          <p style={{margin:'8px 0 0 0',fontSize:13}}>
+            Using mock wallet data. All blockchain features are simulated.
+            {isMetaMaskInstalled && (
+              <button
+                onClick={toggleMockMode}
+                style={{
+                  marginLeft: 8,
+                  padding: '4px 8px',
+                  fontSize: 12,
+                  borderRadius: 4,
+                  border: 'none',
+                  background: '#1976d2',
+                  color: 'white',
+                  cursor: 'pointer'
+                }}
+              >
+                Switch to Real Wallet
+              </button>
+            )}
+          </p>
+        </div>
+      )}
+
       {error && (
         <div style={{
           color:'#ff4444',
@@ -21,7 +55,7 @@ export default function WalletConnection(){
         </div>
       )}
       
-      {!isMetaMaskInstalled && (
+      {!isMetaMaskInstalled && !mockMode && (
         <div style={{
           color:'#ff9800',
           background:'#fff3e0',
@@ -55,26 +89,33 @@ export default function WalletConnection(){
         {!isConnected ? (
           <button 
             onClick={connect} 
-            disabled={!isMetaMaskInstalled}
             style={{
               padding:'10px 20px',
               borderRadius:8,
-              background: isMetaMaskInstalled ? '#00e3ff' : '#cccccc',
-              color: isMetaMaskInstalled ? '#000' : '#666',
+              background: mockMode ? '#1976d2' : (isMetaMaskInstalled ? '#00e3ff' : '#cccccc'),
+              color: mockMode || isMetaMaskInstalled ? '#fff' : '#666',
               border:'none',
               fontWeight:600,
-              cursor: isMetaMaskInstalled ? 'pointer' : 'not-allowed',
+              cursor: 'pointer',
               transition:'all 0.2s',
               fontSize:15
             }}
             onMouseOver={(e) => {
-              if (isMetaMaskInstalled) e.target.style.background = '#00c8e0';
+              if (mockMode) {
+                e.target.style.background = '#1565c0';
+              } else if (isMetaMaskInstalled) {
+                e.target.style.background = '#00c8e0';
+              }
             }}
             onMouseOut={(e) => {
-              if (isMetaMaskInstalled) e.target.style.background = '#00e3ff';
+              if (mockMode) {
+                e.target.style.background = '#1976d2';
+              } else if (isMetaMaskInstalled) {
+                e.target.style.background = '#00e3ff';
+              }
             }}
           >
-            {isMetaMaskInstalled ? '🦊 Connect Wallet' : 'Install MetaMask First'}
+            {mockMode ? '🎭 Connect Mock Wallet' : (isMetaMaskInstalled ? '🦊 Connect Wallet' : 'Install MetaMask First')}
           </button>
         ) : (
           <>

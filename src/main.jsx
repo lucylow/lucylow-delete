@@ -5,14 +5,26 @@ import './index.css';
 import App from './App';
 
 // Error overlay: if runtime errors occur (white page), show a helpful message
+// But don't show for non-blocking errors like MetaMask issues
 function showFatalError(err){
   try{
+    const errString = String(err);
+    
+    // Don't show fatal error for MetaMask or wallet-related issues
+    if (errString.includes('MetaMask') || 
+        errString.includes('ethereum') || 
+        errString.includes('wallet') ||
+        errString.includes('Web3')) {
+      console.warn('Non-fatal wallet error (app will continue):', err);
+      return;
+    }
+
     const root = document.getElementById('root');
-    if(root){
+    if(root && root.innerHTML.trim() === ''){
       root.innerHTML = `
         <div style="font-family:Inter,Arial,sans-serif;padding:24px;color:#041522;background:#fff;">
           <h2 style="color:#b00202;">Application Error</h2>
-          <pre style="white-space:pre-wrap;color:#101010;">${String(err)}</pre>
+          <pre style="white-space:pre-wrap;color:#101010;">${errString}</pre>
           <p>Please open the browser console for full stack trace.</p>
         </div>
       `;
@@ -24,11 +36,19 @@ function showFatalError(err){
 
 window.addEventListener('error', (ev) => {
   console.error('Global error caught', ev.error || ev.message);
-  showFatalError(ev.error || ev.message || 'Unknown error');
+  // Only show fatal error for critical issues
+  const errString = String(ev.error || ev.message);
+  if (!errString.includes('MetaMask') && !errString.includes('ethereum') && !errString.includes('Web3')) {
+    showFatalError(ev.error || ev.message || 'Unknown error');
+  }
 });
 window.addEventListener('unhandledrejection', (ev) => {
   console.error('Unhandled rejection', ev.reason);
-  showFatalError(ev.reason || 'Unhandled promise rejection');
+  // Only show fatal error for critical promise rejections
+  const errString = String(ev.reason);
+  if (!errString.includes('MetaMask') && !errString.includes('ethereum') && !errString.includes('Web3')) {
+    showFatalError(ev.reason || 'Unhandled promise rejection');
+  }
 });
 
 // Some static hosts don't rewrite unknown paths to index.html. Fall back to

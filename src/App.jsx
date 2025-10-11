@@ -133,10 +133,10 @@ function App() {
   return (
     <ThemeProvider theme={autorlTheme}>
       <CssBaseline />
-      <Web3Provider>
-        <OMHAuthProvider>
-          <div className="App">
-            <ErrorBoundary>
+      <ErrorBoundary>
+        <Web3Provider>
+          <OMHAuthProvider>
+            <div className="App">
               <Routes>
                 <Route path="/" element={<LandingPageWrapper />} />
                 <Route path="/app/*" element={
@@ -158,23 +158,23 @@ function App() {
                     </Routes>
                   </>
                 } />
-                {/* Legacy routes for backward compatibility */}
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/devices" element={<DeviceManager />} />
-                <Route path="/tasks" element={<TaskExecution />} />
-                <Route path="/ai-training" element={<AITraining />} />
-                <Route path="/analytics" element={<Analytics />} />
-                <Route path="/blockchain" element={<BlockchainEnhancedDashboard />} />
-                <Route path="/marketplace" element={<Marketplace />} />
-                <Route path="/omh-integration" element={<OMHIntegrationPage />} />
-                <Route path="/docs" element={<Documentation />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/profile" element={<Profile />} />
+                {/* Legacy routes for backward compatibility - with Navigation */}
+                <Route path="/dashboard" element={<><Navigation /><Dashboard /></>} />
+                <Route path="/devices" element={<><Navigation /><DeviceManager /></>} />
+                <Route path="/tasks" element={<><Navigation /><TaskExecution /></>} />
+                <Route path="/ai-training" element={<><Navigation /><AITraining /></>} />
+                <Route path="/analytics" element={<><Navigation /><Analytics /></>} />
+                <Route path="/blockchain" element={<><Navigation /><BlockchainEnhancedDashboard /></>} />
+                <Route path="/marketplace" element={<><Navigation /><Marketplace /></>} />
+                <Route path="/omh-integration" element={<><Navigation /><OMHIntegrationPage /></>} />
+                <Route path="/docs" element={<><Navigation /><Documentation /></>} />
+                <Route path="/settings" element={<><Navigation /><Settings /></>} />
+                <Route path="/profile" element={<><Navigation /><Profile /></>} />
               </Routes>
-            </ErrorBoundary>
-          </div>
-        </OMHAuthProvider>
-      </Web3Provider>
+            </div>
+          </OMHAuthProvider>
+        </Web3Provider>
+      </ErrorBoundary>
     </ThemeProvider>
   );
 }

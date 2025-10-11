@@ -22,6 +22,9 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
+      const errorString = this.state.error ? this.state.error.toString() : '';
+      const isWeb3Error = errorString.includes('MetaMask') || errorString.includes('ethers') || errorString.includes('Web3') || errorString.includes('blockchain');
+      
       // Fallback UI
       return (
         <div style={{
@@ -33,9 +36,18 @@ class ErrorBoundary extends React.Component {
           color: '#d63031',
           fontFamily: 'Arial, sans-serif'
         }}>
-          <h2 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>⚠️ Something went wrong</h2>
+          <h2 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>
+            {isWeb3Error ? '🔗 Blockchain Feature Error' : '⚠️ Something went wrong'}
+          </h2>
           <p style={{ margin: '0 0 15px 0', fontSize: '14px' }}>
-            An error occurred while loading this component. This might be related to blockchain functionality.
+            {isWeb3Error ? (
+              <>
+                This error is related to blockchain functionality. The app will work fine without MetaMask. 
+                Blockchain features are optional and not required for core functionality.
+              </>
+            ) : (
+              'An error occurred while loading this component.'
+            )}
           </p>
           <details style={{ fontSize: '12px', marginTop: '10px' }}>
             <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>Error Details</summary>
@@ -49,7 +61,7 @@ class ErrorBoundary extends React.Component {
             }}>
               {this.state.error && this.state.error.toString()}
               <br />
-              {this.state.errorInfo.componentStack}
+              {this.state.errorInfo && this.state.errorInfo.componentStack}
             </pre>
           </details>
           <button 
