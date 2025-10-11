@@ -19,7 +19,7 @@ export const Web3Provider = ({ children }) => {
     try {
       const accs = await window.ethereum.request({ method: 'eth_accounts' });
       if (accs && accs.length) {
-        const signer = provider.getSigner();
+        const signer = await provider.getSigner();
         setSigner(signer);
         setAccount(accs[0]);
         const net = await provider.getNetwork();
@@ -34,7 +34,7 @@ export const Web3Provider = ({ children }) => {
 
   useEffect(() => {
     if (window.ethereum) {
-      const p = new ethers.providers.Web3Provider(window.ethereum);
+      const p = new ethers.BrowserProvider(window.ethereum);
       setProvider(p);
       checkAccounts();
       window.ethereum.on('accountsChanged', checkAccounts);
@@ -54,9 +54,9 @@ export const Web3Provider = ({ children }) => {
     }
     try {
       const accs = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      const p = new ethers.providers.Web3Provider(window.ethereum);
+      const p = new ethers.BrowserProvider(window.ethereum);
       setProvider(p);
-      const s = p.getSigner();
+      const s = await p.getSigner();
       setSigner(s);
       setAccount(accs[0]);
       const net = await p.getNetwork();

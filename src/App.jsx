@@ -20,6 +20,7 @@ import OMHIntegrationPage from './pages/OMHIntegrationPage';
 
 // Import OMH Auth Context
 import { OMHAuthProvider } from './contexts/OMHAuthContext';
+import { Web3Provider } from './contexts/Web3Context';
 
 // AutoRL theme configuration
 const autorlTheme = createTheme({
@@ -57,25 +58,27 @@ function App() {
   return (
     <ThemeProvider theme={autorlTheme}>
       <CssBaseline />
-      <OMHAuthProvider>
-        <div className="App">
-          <Navigation />
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/devices" element={<DeviceManager />} />
-            <Route path="/tasks" element={<TaskExecution />} />
-            <Route path="/ai-training" element={<AITraining />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/blockchain" element={<BlockchainEnhancedDashboard />} />
-            <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/omh-integration" element={<OMHIntegrationPage />} />
-            <Route path="/docs" element={<Documentation />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/profile" element={<Profile />} />
-          </Routes>
-        </div>
-      </OMHAuthProvider>
+      <Web3Provider>
+        <OMHAuthProvider>
+          <div className="App">
+            <Navigation />
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/devices" element={<DeviceManager />} />
+              <Route path="/tasks" element={<TaskExecution />} />
+              <Route path="/ai-training" element={<AITraining />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/blockchain" element={<BlockchainEnhancedDashboard />} />
+              <Route path="/marketplace" element={<Marketplace />} />
+              <Route path="/omh-integration" element={<OMHIntegrationPage />} />
+              <Route path="/docs" element={<Documentation />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/profile" element={<Profile />} />
+            </Routes>
+          </div>
+        </OMHAuthProvider>
+      </Web3Provider>
     </ThemeProvider>
   );
 }
