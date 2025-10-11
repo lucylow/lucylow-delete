@@ -1,127 +1,17 @@
 import React, { useState } from 'react';
-import { Activity, Smartphone, Zap, TrendingUp, CheckCircle } from 'lucide-react';
+import { Activity, Smartphone, Zap, TrendingUp, CheckCircle, Users, Brain, BarChart3, Book, Settings as SettingsIcon, User } from 'lucide-react';
+import Dashboard from './pages/Dashboard';
+import Tasks from './pages/Tasks';
+import Devices from './pages/Devices';
+import Analytics from './pages/Analytics';
+import AITraining from './pages/AITraining';
+import Marketplace from './pages/Marketplace';
+import Documentation from './pages/Documentation';
+import Settings from './pages/Settings';
+import Profile from './pages/Profile';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
-
-  // Simple Dashboard Component
-  const Dashboard = () => (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-white">AutoRL Dashboard</h1>
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-900 text-green-200">
-          <Activity className="w-4 h-4 mr-2" />
-          System Active
-        </span>
-      </div>
-
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Tasks Completed</p>
-              <p className="text-3xl font-bold text-white mt-2">47</p>
-            </div>
-            <CheckCircle className="w-10 h-10 text-green-400" />
-          </div>
-          <p className="text-green-400 text-sm mt-4">↑ 12% from last week</p>
-        </div>
-
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Success Rate</p>
-              <p className="text-3xl font-bold text-white mt-2">94%</p>
-            </div>
-            <TrendingUp className="w-10 h-10 text-blue-400" />
-          </div>
-          <p className="text-blue-400 text-sm mt-4">↑ 3% improvement</p>
-        </div>
-
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Active Devices</p>
-              <p className="text-3xl font-bold text-white mt-2">8</p>
-            </div>
-            <Smartphone className="w-10 h-10 text-purple-400" />
-          </div>
-          <p className="text-gray-400 text-sm mt-4">2 Android, 6 iOS</p>
-        </div>
-
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Avg Speed</p>
-              <p className="text-3xl font-bold text-white mt-2">4.2s</p>
-            </div>
-            <Zap className="w-10 h-10 text-yellow-400" />
-          </div>
-          <p className="text-yellow-400 text-sm mt-4">↓ 0.8s faster</p>
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-        <h2 className="text-xl font-semibold text-white mb-4">Recent Activity</h2>
-        <div className="space-y-3">
-          {[
-            { action: 'Login test completed', device: 'Pixel 7', time: '2 min ago', status: 'success' },
-            { action: 'Form validation test', device: 'iPhone 14', time: '5 min ago', status: 'success' },
-            { action: 'Navigation flow test', device: 'Galaxy S23', time: '12 min ago', status: 'success' },
-          ].map((activity, idx) => (
-            <div key={idx} className="flex items-center justify-between p-3 bg-gray-900 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <CheckCircle className="w-5 h-5 text-green-400" />
-                <div>
-                  <p className="text-white font-medium">{activity.action}</p>
-                  <p className="text-gray-400 text-sm">{activity.device}</p>
-                </div>
-              </div>
-              <span className="text-gray-400 text-sm">{activity.time}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  // Simple page placeholders
-  const Tasks = () => (
-    <div className="text-white">
-      <h1 className="text-3xl font-bold mb-4">Tasks</h1>
-      <p className="text-gray-400">Task management coming soon...</p>
-    </div>
-  );
-
-  const Devices = () => (
-    <div className="text-white">
-      <h1 className="text-3xl font-bold mb-4">Devices</h1>
-      <p className="text-gray-400">Device management coming soon...</p>
-    </div>
-  );
-
-  const Analytics = () => (
-    <div className="text-white">
-      <h1 className="text-3xl font-bold mb-4">Analytics</h1>
-      <p className="text-gray-400">Analytics dashboard coming soon...</p>
-    </div>
-  );
-
-  const Documentation = () => (
-    <div className="text-white">
-      <h1 className="text-3xl font-bold mb-4">Documentation</h1>
-      <p className="text-gray-400">Documentation coming soon...</p>
-    </div>
-  );
-
-  const Settings = () => (
-    <div className="text-white">
-      <h1 className="text-3xl font-bold mb-4">Settings</h1>
-      <p className="text-gray-400">Settings panel coming soon...</p>
-    </div>
-  );
 
   const renderPage = () => {
     switch (currentPage) {
@@ -133,10 +23,16 @@ function App() {
         return <Devices />;
       case 'analytics':
         return <Analytics />;
+      case 'ai-training':
+        return <AITraining />;
+      case 'marketplace':
+        return <Marketplace />;
       case 'documentation':
         return <Documentation />;
       case 'settings':
         return <Settings />;
+      case 'profile':
+        return <Profile />;
       default:
         return <Dashboard />;
     }
@@ -155,62 +51,95 @@ function App() {
               <div className="ml-10 flex items-baseline space-x-4">
                 <button
                   onClick={() => setCurrentPage('dashboard')}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  className={`px-3 py-2 rounded-md text-sm font-medium flex items-center ${
                     currentPage === 'dashboard'
                       ? 'bg-gray-900 text-white'
                       : 'text-gray-300 hover:bg-gray-700 hover:text-white'
                   }`}
                 >
+                  <Activity className="w-4 h-4 mr-2" />
                   Dashboard
                 </button>
                 <button
                   onClick={() => setCurrentPage('tasks')}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  className={`px-3 py-2 rounded-md text-sm font-medium flex items-center ${
                     currentPage === 'tasks'
                       ? 'bg-gray-900 text-white'
                       : 'text-gray-300 hover:bg-gray-700 hover:text-white'
                   }`}
                 >
+                  <CheckCircle className="w-4 h-4 mr-2" />
                   Tasks
                 </button>
                 <button
                   onClick={() => setCurrentPage('devices')}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  className={`px-3 py-2 rounded-md text-sm font-medium flex items-center ${
                     currentPage === 'devices'
                       ? 'bg-gray-900 text-white'
                       : 'text-gray-300 hover:bg-gray-700 hover:text-white'
                   }`}
                 >
+                  <Smartphone className="w-4 h-4 mr-2" />
                   Devices
                 </button>
                 <button
                   onClick={() => setCurrentPage('analytics')}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  className={`px-3 py-2 rounded-md text-sm font-medium flex items-center ${
                     currentPage === 'analytics'
                       ? 'bg-gray-900 text-white'
                       : 'text-gray-300 hover:bg-gray-700 hover:text-white'
                   }`}
                 >
+                  <BarChart3 className="w-4 h-4 mr-2" />
                   Analytics
                 </button>
                 <button
+                  onClick={() => setCurrentPage('ai-training')}
+                  className={`px-3 py-2 rounded-md text-sm font-medium flex items-center ${
+                    currentPage === 'ai-training'
+                      ? 'bg-gray-900 text-white'
+                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                  }`}
+                >
+                  <Brain className="w-4 h-4 mr-2" />
+                  AI Training
+                </button>
+                <button
+                  onClick={() => setCurrentPage('marketplace')}
+                  className={`px-3 py-2 rounded-md text-sm font-medium flex items-center ${
+                    currentPage === 'marketplace'
+                      ? 'bg-gray-900 text-white'
+                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                  }`}
+                >
+                  <Users className="w-4 h-4 mr-2" />
+                  Marketplace
+                </button>
+                <button
                   onClick={() => setCurrentPage('documentation')}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  className={`px-3 py-2 rounded-md text-sm font-medium flex items-center ${
                     currentPage === 'documentation'
                       ? 'bg-gray-900 text-white'
                       : 'text-gray-300 hover:bg-gray-700 hover:text-white'
                   }`}
                 >
+                  <Book className="w-4 h-4 mr-2" />
                   Docs
                 </button>
               </div>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setCurrentPage('profile')}
+                className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700"
+              >
+                <User className="w-5 h-5" />
+              </button>
               <button
                 onClick={() => setCurrentPage('settings')}
                 className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700"
               >
-                Settings
+                <SettingsIcon className="w-5 h-5" />
               </button>
             </div>
           </div>

@@ -81,14 +81,14 @@ def check_dependencies():
     return True
 
 def start_backend():
-    """Start the unified backend server"""
-    print_info("Starting Backend API Server...")
+    """Start the master backend server"""
+    print_info("Starting Master Backend Server...")
     
     env = os.environ.copy()
-    env['AUTORL_MODE'] = 'demo'  # Start in demo mode by default
+    env['AUTORL_MODE'] = env.get('AUTORL_MODE', 'demo')  # Default to demo mode
     
     proc = subprocess.Popen(
-        [sys.executable, "backend_server.py"],
+        [sys.executable, "master_backend.py"],
         env=env,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -101,7 +101,7 @@ def start_backend():
     time.sleep(3)
     
     if proc.poll() is None:
-        print_success("Backend API Server started on http://localhost:5000")
+        print_success("Master Backend Server started on http://localhost:5000")
         return True
     else:
         print_error("Failed to start backend server")
