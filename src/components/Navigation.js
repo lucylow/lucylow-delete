@@ -85,19 +85,49 @@ const Navigation = () => {
 
   const isActive = (path) => location.pathname === path;
 
-  const status = useMemo(() => ({ label: 'Healthy', color: 'success' }), []);
+  const status = useMemo(() => ({ label: 'Connected', color: 'info' }), []);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="sticky" elevation={4} sx={{
-        background: 'linear-gradient(90deg, rgba(10,10,10,1) 30%, rgba(0,230,118,0.08) 60%, rgba(33,150,243,0.12) 100%)'
-      }}>
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
+      {/* Top Navigation Bar with Blue Gradient */}
+      <AppBar 
+        position="sticky" 
+        elevation={0}
+        sx={{
+          background: 'linear-gradient(135deg, rgba(30, 136, 229, 0.95) 0%, rgba(21, 101, 192, 0.95) 100%)',
+          backdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(66, 165, 245, 0.2)',
+          boxShadow: '0 4px 20px rgba(30, 136, 229, 0.3)',
+        }}
+      >
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, minHeight: 64 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleDrawerToggle} sx={{ mr: 1 }}>
+            <IconButton 
+              edge="start" 
+              color="inherit" 
+              aria-label="menu" 
+              onClick={handleDrawerToggle} 
+              sx={{ 
+                mr: 1,
+                transition: 'all 0.3s',
+                '&:hover': {
+                  transform: 'scale(1.1)',
+                  bgcolor: 'rgba(255, 255, 255, 0.1)',
+                }
+              }}
+            >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: 1 }}>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                fontWeight: 700, 
+                letterSpacing: 1,
+                background: 'linear-gradient(90deg, #ffffff 0%, #e3f2fd 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
               AutoRL Platform
             </Typography>
             <Box sx={{ ml: 2 }}>
@@ -107,29 +137,156 @@ const Navigation = () => {
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <BreadcrumbsNav location={location} />
-            <IconButton color="inherit" aria-label="account" onClick={() => navigate('/profile')}>
+            <IconButton 
+              color="inherit" 
+              aria-label="account" 
+              onClick={() => navigate('/profile')}
+              sx={{
+                transition: 'all 0.3s',
+                '&:hover': {
+                  transform: 'scale(1.1)',
+                  bgcolor: 'rgba(255, 255, 255, 0.1)',
+                }
+              }}
+            >
               <AccountCircle />
             </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
 
-      <Drawer anchor="left" open={drawerOpen} onClose={handleDrawerToggle}>
-        <Box sx={{ width: 280, bgcolor: theme.palette.background.paper }} role="presentation">
-          <Box sx={{ p: 2, borderBottom: `1px solid ${theme.palette.divider}` }}>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>AutoRL</Typography>
-            <Typography variant="body2" color="text.secondary">AI Agent Platform</Typography>
+      {/* Glassmorphic Sidebar Drawer */}
+      <Drawer 
+        anchor="left" 
+        open={drawerOpen} 
+        onClose={handleDrawerToggle}
+        PaperProps={{
+          sx: {
+            width: 280,
+            background: 'linear-gradient(180deg, rgba(18, 24, 43, 0.95) 0%, rgba(13, 17, 31, 0.95) 100%)',
+            backdropFilter: 'blur(20px)',
+            borderRight: '1px solid rgba(30, 136, 229, 0.2)',
+            boxShadow: '4px 0 20px rgba(30, 136, 229, 0.2)',
+          }
+        }}
+      >
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }} role="presentation">
+          {/* Sidebar Header */}
+          <Box 
+            sx={{ 
+              p: 3, 
+              borderBottom: `1px solid rgba(30, 136, 229, 0.2)`,
+              background: 'linear-gradient(135deg, rgba(30, 136, 229, 0.1) 0%, rgba(21, 101, 192, 0.1) 100%)',
+            }}
+          >
+            <Typography 
+              variant="h5" 
+              sx={{ 
+                fontWeight: 700,
+                background: 'linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                mb: 0.5,
+              }}
+            >
+              AutoRL
+            </Typography>
+            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+              AI Agent Command Center
+            </Typography>
           </Box>
-          <List>
+
+          {/* Navigation Menu */}
+          <List sx={{ flex: 1, px: 1, py: 2 }}>
             {menuItems.map((item) => (
-              <ListItem button key={item.title} selected={isActive(item.path)} onClick={() => handleNavigation(item.path)}>
-                <ListItemIcon sx={{ color: isActive(item.path) ? theme.palette.primary.main : 'inherit' }}>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.title} secondary={item.description} />
+              <ListItem 
+                button 
+                key={item.title} 
+                selected={isActive(item.path)} 
+                onClick={() => handleNavigation(item.path)}
+                sx={{
+                  borderRadius: 2,
+                  mb: 0.5,
+                  transition: 'all 0.3s',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&::before': isActive(item.path) ? {
+                    content: '""',
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: 4,
+                    bgcolor: theme.palette.primary.main,
+                    borderRadius: '0 4px 4px 0',
+                  } : {},
+                  '&.Mui-selected': {
+                    bgcolor: 'rgba(30, 136, 229, 0.15)',
+                    borderLeft: `4px solid ${theme.palette.primary.main}`,
+                    '&:hover': {
+                      bgcolor: 'rgba(30, 136, 229, 0.25)',
+                    }
+                  },
+                  '&:hover': {
+                    bgcolor: 'rgba(30, 136, 229, 0.1)',
+                    transform: 'translateX(4px)',
+                  }
+                }}
+              >
+                <ListItemIcon 
+                  sx={{ 
+                    color: isActive(item.path) ? theme.palette.primary.main : theme.palette.text.secondary,
+                    minWidth: 40,
+                    transition: 'all 0.3s',
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText 
+                  primary={item.title} 
+                  secondary={item.description}
+                  primaryTypographyProps={{
+                    fontWeight: isActive(item.path) ? 600 : 400,
+                    color: isActive(item.path) ? theme.palette.primary.light : theme.palette.text.primary,
+                  }}
+                  secondaryTypographyProps={{
+                    fontSize: '0.75rem',
+                    color: theme.palette.text.secondary,
+                  }}
+                />
               </ListItem>
             ))}
           </List>
-          <Box sx={{ p: 2, mt: 'auto' }}>
-            <Typography variant="caption" color="text.secondary">v0.1 • Enterprise preview</Typography>
+
+          {/* Sidebar Footer with Status */}
+          <Box 
+            sx={{ 
+              p: 2, 
+              borderTop: `1px solid rgba(30, 136, 229, 0.2)`,
+              background: 'linear-gradient(135deg, rgba(30, 136, 229, 0.05) 0%, rgba(21, 101, 192, 0.05) 100%)',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, gap: 1 }}>
+              <Box
+                sx={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  bgcolor: '#00d4ff',
+                  boxShadow: '0 0 10px #00d4ff',
+                  animation: 'pulse-blue 2s infinite',
+                }}
+              />
+              <Typography variant="body2" sx={{ color: theme.palette.info.light, fontWeight: 600 }}>
+                WebSocket Connected
+              </Typography>
+            </Box>
+            <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: 'block', mb: 0.5 }}>
+              3 Devices Online
+            </Typography>
+            <Typography variant="caption" sx={{ color: theme.palette.text.secondary, opacity: 0.7 }}>
+              v1.0.0 • Enterprise Edition
+            </Typography>
           </Box>
         </Box>
       </Drawer>

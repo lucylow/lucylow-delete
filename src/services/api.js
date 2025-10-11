@@ -4,9 +4,12 @@
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
+console.log('🔧 API Service initialized with base URL:', API_BASE_URL);
+
 class ApiService {
   constructor(baseUrl = API_BASE_URL) {
     this.baseUrl = baseUrl;
+    console.log('📡 ApiService created with baseUrl:', this.baseUrl);
   }
 
   async request(endpoint, options = {}) {
@@ -19,17 +22,22 @@ class ApiService {
       ...options,
     };
 
+    console.log(`📤 API Request: ${options.method || 'GET'} ${url}`);
+
     try {
       const response = await fetch(url, config);
       
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
+        console.error(`❌ API Error [${endpoint}]:`, response.status, error);
         throw new Error(error.message || `HTTP ${response.status}: ${response.statusText}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      console.log(`📥 API Response [${endpoint}]:`, data);
+      return data;
     } catch (error) {
-      console.error(`API Error [${endpoint}]:`, error);
+      console.error(`❌ API Error [${endpoint}]:`, error);
       throw error;
     }
   }

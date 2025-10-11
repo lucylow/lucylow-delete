@@ -24,7 +24,7 @@ const Documentation = () => {
     {
       title: 'Getting Started',
       icon: FlashOn,
-      color: '#00e676',
+      color: '#1e88e5',
       items: [
         { primary: 'Installation & Setup', secondary: 'Set up AutoRL on your system' },
         { primary: 'Connecting Devices', secondary: 'Link your Android/iOS devices' },
@@ -35,7 +35,7 @@ const Documentation = () => {
     {
       title: 'API Reference',
       icon: Code,
-      color: '#2196f3',
+      color: '#0288d1',
       items: [
         { primary: 'POST /api/v1/execute', secondary: 'Execute automation task' },
         { primary: 'GET /api/v1/devices', secondary: 'List connected devices' },
@@ -46,7 +46,7 @@ const Documentation = () => {
     {
       title: 'Best Practices',
       icon: MenuBook,
-      color: '#ff9800',
+      color: '#42a5f5',
       items: [
         { primary: 'Writing Effective Task Descriptions', secondary: 'Tips for natural language tasks' },
         { primary: 'Device Management Tips', secondary: 'Optimize your device setup' },
@@ -57,7 +57,7 @@ const Documentation = () => {
     {
       title: 'Security',
       icon: Security,
-      color: '#f44336',
+      color: '#00b0ff',
       items: [
         { primary: 'PII Data Masking', secondary: 'Protect sensitive information' },
         { primary: 'Safety Guardrails', secondary: 'Built-in security measures' },
@@ -127,11 +127,11 @@ const Documentation = () => {
           <Typography variant="h5" fontWeight="600" sx={{ mb: 3 }}>
             Quick Start Example
           </Typography>
-          <Paper sx={{ bgcolor: '#1a1a1a', p: 3, borderRadius: 2, border: '1px solid rgba(255,255,255,0.1)' }}>
+          <Paper sx={{ bgcolor: '#1a1a1a', p: 3, borderRadius: 2, border: '1px solid rgba(30, 136, 229, 0.3)' }}>
             <Typography component="pre" sx={{ 
               fontFamily: 'monospace', 
               fontSize: '0.9rem', 
-              color: '#00e676',
+              color: '#42a5f5',
               overflow: 'auto',
               m: 0
             }}>
