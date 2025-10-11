@@ -7,7 +7,7 @@ import { Brain, Play, Pause, TrendingUp } from 'lucide-react'
 
 export default function AITraining() {
   const [isTraining, setIsTraining] = useState(false)
-  const [trainingProgress, setTrainingProgress] = useState(65)
+  const [trainingProgress] = useState(65)
   
   const models = [
     { name: 'v1.0', accuracy: 87.3, episodes: 1000, status: 'deprecated' },

@@ -35,12 +35,12 @@ import {
   Info
 } from '@mui/icons-material';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_BASE_URL = (typeof process !== 'undefined' && process.env.REACT_APP_API_URL) || 'http://localhost:8000';
 
 const OMHIntegration = () => {
   const [omhEnabled, setOmhEnabled] = useState(false);
   const [authStatus, setAuthStatus] = useState({ authenticated: false, user: null });
-  const [mapsEnabled, setMapsEnabled] = useState(true);
+  const [mapsEnabled] = useState(true);
   const [location, setLocation] = useState({ lat: 37.7749, lng: -122.4194 });
   const [address, setAddress] = useState('');
   const [geocodeResult, setGeocodeResult] = useState(null);

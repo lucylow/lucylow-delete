@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 
 /*
 Props:
@@ -14,7 +14,6 @@ export default function MobileController({ mobileRef, onEvent, disabled = false 
     if (isRunning) return;
     setIsRunning(true);
     
-    const runId = Date.now();
     onEvent?.({ event: 'perception', text: 'Capturing screenshot and OCR...', timestamp: Date.now() });
 
     // small delay
