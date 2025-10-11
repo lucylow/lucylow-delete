@@ -111,7 +111,7 @@ const TaskExecution = () => {
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [activeTask, currentStep]);
+  }, [activeTask, currentStep, taskSteps.length]);
 
   const handleStartTask = () => {
     setActiveTask({

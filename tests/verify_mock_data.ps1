@@ -70,6 +70,10 @@ if ($metrics) {
     Write-Host "   - Avg Runtime: $($metrics.avg_task_runtime_seconds)s" -ForegroundColor Gray
 }
 
+if ($activity) {
+    Write-Host "✅ Mock activity: $($activity.Count) activity entries found" -ForegroundColor Green
+}
+
 if ($policies) {
     Write-Host "✅ Mock policies: $($policies.Count) policies found" -ForegroundColor Green
 }

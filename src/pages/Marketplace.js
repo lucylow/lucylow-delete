@@ -207,7 +207,7 @@ const Marketplace = () => {
               },
             }}
           >
-            {categories.map((cat, idx) => (
+            {categories.map((cat) => (
               <Tab 
                 key={cat.label} 
                 label={cat.label} 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Box, 
   Container, 
@@ -48,20 +48,6 @@ const Dashboard = () => {
     { id: 'task-006', instruction: 'Reply to email', status: 'completed', device: 'Pixel 8', duration: '1m 5s', progress: 100 },
   ]);
 
-  const [animatedStats, setAnimatedStats] = useState({
-    successRate: 0,
-    devicesOnline: 0,
-    activeTasks: 0,
-    episodesToday: 0,
-  });
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setAnimatedStats(systemStats);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [systemStats]);
-
   const getStatusColor = (status) => {
     switch (status) {
       case 'completed':
@@ -88,6 +74,7 @@ const Dashboard = () => {
     }
   };
 
+  // eslint-disable-next-line no-unused-vars
   const StatCard = ({ icon: Icon, value, label, trend, color }) => (
     <Card 
       sx={{ 

@@ -25,6 +25,62 @@ import {
 
 export default function AutoRLLandingPage() {
   const [selectedApp, setSelectedApp] = useState('banking');
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const appConfigs = {
+    banking: {
+      title: 'Banking App',
+      icon: '🏦',
+      message: 'AutoRL is managing your banking transactions...',
+      content: [
+        { icon: '🏠', text: 'Home', color: 'bg-blue-500' },
+        { icon: '👤', text: 'Jane Doe', color: 'bg-gray-400' },
+        { icon: '💰', text: '$ 2,450.00', color: 'bg-green-500' },
+        { icon: '📊', text: 'Transactions', color: 'bg-blue-600' },
+        { icon: '⚙️', text: 'Settings', color: 'bg-gray-500' }
+      ],
+      bgColor: 'bg-blue-50',
+      borderColor: 'border-blue-200'
+    },
+    calendar: {
+      title: 'Calendar App',
+      icon: '📅',
+      message: 'AutoRL is scheduling your appointments...',
+      content: [
+        { icon: '📅', text: 'Today', color: 'bg-blue-500' },
+        { icon: '👥', text: 'Team Meeting', color: 'bg-purple-500' },
+        { icon: '☕', text: 'Coffee Break', color: 'bg-orange-500' },
+        { icon: '💼', text: 'Client Call', color: 'bg-green-500' },
+        { icon: '➕', text: 'Add Event', color: 'bg-blue-600' }
+      ],
+      bgColor: 'bg-purple-50',
+      borderColor: 'border-purple-200'
+    },
+    ecommerce: {
+      title: 'E-Commerce App',
+      icon: '🛒',
+      message: 'AutoRL is shopping for you...',
+      content: [
+        { icon: '🏠', text: 'Home', color: 'bg-blue-500' },
+        { icon: '🛍️', text: 'Cart (3)', color: 'bg-red-500' },
+        { icon: '💳', text: 'Checkout', color: 'bg-green-500' },
+        { icon: '📦', text: 'Orders', color: 'bg-purple-500' },
+        { icon: '⭐', text: 'Wishlist', color: 'bg-yellow-500' }
+      ],
+      bgColor: 'bg-green-50',
+      borderColor: 'border-green-200'
+    }
+  };
+
+  const handleAppChange = (app) => {
+    if (app === selectedApp) return; // Prevent unnecessary re-renders
+    
+    setIsAnimating(true);
+    setTimeout(() => {
+      setSelectedApp(app);
+      setIsAnimating(false);
+    }, 150);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -56,8 +112,8 @@ export default function AutoRLLandingPage() {
         
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
           <div className="mb-6">
-            <div className="inline-flex items-center gap-2 bg-blue-600/20 backdrop-blur-sm border border-blue-500/30 rounded-full px-4 py-2 mb-6">
-              <Zap className="w-4 h-4 text-blue-400" />
+            <div className="inline-flex items-center gap-2 bg-blue-600/20 backdrop-blur-sm border border-blue-500/30 rounded-full px-4 py-2 mb-6 animate-float">
+              <Zap className="w-4 h-4 text-blue-400 animate-pulse" />
               <span className="text-blue-300 text-sm font-medium">AI-Powered Automation</span>
             </div>
           </div>
@@ -111,70 +167,99 @@ export default function AutoRLLandingPage() {
             {/* App Selection Buttons */}
             <div className="flex flex-wrap justify-center gap-4 mb-12">
               <button 
-                onClick={() => setSelectedApp('banking')}
-                className={`px-6 py-3 rounded-full font-semibold transition-all ${
+                onClick={() => handleAppChange('banking')}
+                className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 ${
                   selectedApp === 'banking' 
-                    ? 'bg-blue-600 text-white' 
+                    ? 'bg-blue-600 text-white shadow-lg' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 bg-white/20 rounded"></div>
+                  <span className="text-lg">🏦</span>
                   Banking
                 </div>
               </button>
               <button 
-                onClick={() => setSelectedApp('calendar')}
-                className={`px-6 py-3 rounded-full font-semibold transition-all ${
+                onClick={() => handleAppChange('calendar')}
+                className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 ${
                   selectedApp === 'calendar' 
-                    ? 'bg-blue-600 text-white' 
+                    ? 'bg-blue-600 text-white shadow-lg' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 bg-white/20 rounded"></div>
+                  <span className="text-lg">📅</span>
                   Calendar
                 </div>
               </button>
               <button 
-                onClick={() => setSelectedApp('ecommerce')}
-                className={`px-6 py-3 rounded-full font-semibold transition-all ${
+                onClick={() => handleAppChange('ecommerce')}
+                className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 ${
                   selectedApp === 'ecommerce' 
-                    ? 'bg-blue-600 text-white' 
+                    ? 'bg-blue-600 text-white shadow-lg' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 bg-white/20 rounded"></div>
+                  <span className="text-lg">🛒</span>
                   E-Commerce
                 </div>
               </button>
             </div>
             
-            {/* Phone Mockup */}
+            {/* Interactive Phone Mockup */}
             <div className="relative max-w-sm mx-auto">
-              <div className="bg-black rounded-[3rem] p-2 shadow-2xl">
-                <div className="bg-white rounded-[2.5rem] p-6 h-96 flex flex-col">
-                  <div className="bg-gray-100 rounded-lg p-4 mb-4">
-                    <p className="text-sm text-gray-700">
-                      Welcome to AutoRL — select an app and give an instruction below!
+              <div className="bg-black rounded-[3rem] p-2 shadow-2xl transform hover:scale-105 transition-transform duration-300">
+                <div className={`rounded-[2.5rem] p-6 h-96 flex flex-col transition-all duration-500 ${
+                  isAnimating ? 'opacity-50 scale-95' : 'opacity-100 scale-100'
+                } ${appConfigs[selectedApp].bgColor}`}>
+                  {/* Status Bar */}
+                  <div className="flex justify-between items-center mb-4 text-xs text-gray-600">
+                    <span>9:41</span>
+                    <span className="text-lg">{appConfigs[selectedApp].icon}</span>
+                    <span>100%</span>
+                  </div>
+                  
+                  {/* App Header */}
+                  <div className={`rounded-lg p-4 mb-4 border ${appConfigs[selectedApp].borderColor}`}>
+                    <p className="text-sm text-gray-700 font-medium">
+                      {appConfigs[selectedApp].title}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {appConfigs[selectedApp].message}
                     </p>
                   </div>
+                  
+                  {/* App Content */}
                   <div className="flex-1 space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 bg-gray-300 rounded"></div>
-                      <span className="text-gray-600">Home</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
-                      <span className="text-gray-600">Jane</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 bg-green-500 rounded"></div>
-                      <span className="text-gray-600">$ 20.00</span>
-                    </div>
+                    {appConfigs[selectedApp].content.map((item, index) => (
+                      <div 
+                        key={index}
+                        className="flex items-center gap-3 animate-fade-in"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                      >
+                        <div className={`w-6 h-6 ${item.color} rounded flex items-center justify-center text-xs`}>
+                          {item.icon}
+                        </div>
+                        <span className="text-gray-600 text-sm">{item.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* AutoRL Indicator */}
+                  <div className="mt-4 flex items-center justify-center gap-2 text-xs text-blue-600">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                    <span>AutoRL Active</span>
                   </div>
                 </div>
+              </div>
+              
+              {/* Floating Action Indicators */}
+              <div className="absolute -top-4 -right-4 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center animate-bounce">
+                <span className="text-white text-sm">🤖</span>
+              </div>
+              <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center animate-pulse">
+                <span className="text-white text-xs">✓</span>
               </div>
             </div>
           </div>
@@ -194,10 +279,10 @@ export default function AutoRLLandingPage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 animate-slide-in-left">
               <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-6">
-                  <Eye className="w-8 h-8 text-blue-600" />
+                <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-6 animate-glow">
+                  <Eye className="w-8 h-8 text-blue-600 animate-pulse" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Visual Perception</h3>
                 <p className="text-gray-600">
@@ -207,10 +292,10 @@ export default function AutoRLLandingPage() {
               </CardContent>
             </Card>
             
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 animate-fade-in">
               <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-6">
-                  <Brain className="w-8 h-8 text-blue-600" />
+                <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-6 animate-glow">
+                  <Brain className="w-8 h-8 text-blue-600 animate-pulse" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">AI Planning</h3>
                 <p className="text-gray-600">
@@ -220,10 +305,10 @@ export default function AutoRLLandingPage() {
               </CardContent>
             </Card>
             
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 animate-slide-in-right">
               <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-6">
-                  <TrendingUp className="w-8 h-8 text-blue-600" />
+                <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-6 animate-glow">
+                  <TrendingUp className="w-8 h-8 text-blue-600 animate-pulse" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Reinforcement Learning</h3>
                 <p className="text-gray-600">
