@@ -1,5 +1,3 @@
-// ...existing imports above
-
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
