@@ -11,11 +11,6 @@ export function useAnalytics(initialTimeRange = '7d') {
   const [error, setError] = useState(null);
   const [timeRange, setTimeRange] = useState(initialTimeRange);
 
-  // Get API base URL from environment or default
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
-                       import.meta.env.VITE_AUTORL_API_BASE || 
-                       'http://localhost:8000';
-
   /**
    * Generate fallback mock data when API is unavailable
    */
@@ -104,7 +99,8 @@ export function useAnalytics(initialTimeRange = '7d') {
     setError(null);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/analytics?range=${timeRange}`);
+      // Use relative URL to leverage Vite proxy (maps /api to http://localhost:5000)
+      const response = await fetch(`/api/analytics?range=${timeRange}`);
       
       if (!response.ok) {
         throw new Error(`Failed to fetch analytics: ${response.statusText}`);
@@ -121,7 +117,7 @@ export function useAnalytics(initialTimeRange = '7d') {
     } finally {
       setIsLoading(false);
     }
-  }, [timeRange, API_BASE_URL, generateFallbackData]);
+  }, [timeRange, generateFallbackData]);
 
   /**
    * Refresh analytics data

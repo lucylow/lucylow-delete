@@ -1,13 +1,15 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle, Clock, Smartphone, Zap, Activity } from 'lucide-react'
+import { CheckCircle, Clock, Smartphone, Zap, Activity, Brain, Eye, Target, Cpu } from 'lucide-react'
 import { MetricCard } from '@/components/MetricCard'
 import { TaskExecutionView } from '@/components/TaskExecutionView'
 import { DeviceStatusPanel } from '@/components/ui/DeviceStatusPanel'
 import { EmptyState } from '@/components/EmptyState'
 import { DashboardSkeleton } from '@/components/ui/DashboardSkeleton'
 import { TaskControlPanel } from '@/components/TaskControlPanel'
+import LiveAgentActivity from '@/components/dashboard/LiveAgentActivity'
+import PerformanceCharts from '@/components/dashboard/PerformanceCharts'
 import { apiService } from '@/services/api'
 import { useWebSocket } from '@/hooks/useWebSocket'
 
@@ -135,19 +137,22 @@ export default function Dashboard() {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold mb-2">AutoRL Control Center</h1>
+            <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
+              <Brain className="w-10 h-10 text-primary animate-pulse" />
+              AutoRL AI Agent Platform
+            </h1>
             <p className="text-muted-foreground">
-              Intelligent Mobile Automation • {new Date().toLocaleString()}
+              🤖 Autonomous Mobile Automation with AI Agents • {new Date().toLocaleString()}
             </p>
           </div>
           <div className="flex items-center gap-3">
             <Badge variant={isConnected ? 'outline' : 'secondary'} className="text-xs">
               <span className={`w-2 h-2 rounded-full mr-1 ${isConnected ? 'bg-green-500' : 'bg-gray-400'}`}></span>
-              {isConnected ? 'WebSocket Connected' : 'WebSocket Disconnected'}
+              {isConnected ? 'AI Agent Connected' : 'AI Agent Disconnected'}
             </Badge>
             <Badge variant={systemStatus === 'active' ? 'default' : 'destructive'}>
               <Activity className="w-4 h-4 mr-1" />
-              {systemStatus === 'active' ? 'System Active' : 'System Idle'}
+              {systemStatus === 'active' ? 'Agent Active' : 'Agent Idle'}
             </Badge>
           </div>
         </div>
@@ -184,12 +189,66 @@ export default function Dashboard() {
         <TaskControlPanel devices={devices} onTaskCreated={fetchData} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* AI Agent Features Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-3 rounded-full bg-primary/20">
+                <Brain className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">AI Agent Status</p>
+                <p className="text-2xl font-bold">Intelligent</p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              LLM-powered task planning & execution
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-3 rounded-full bg-blue-500/20">
+                <Eye className="w-6 h-6 text-blue-500" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Visual Perception</p>
+                <p className="text-2xl font-bold">Active</p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              OCR, UI element detection, screenshot analysis
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-purple-500/20">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-3 rounded-full bg-purple-500/20">
+                <Target className="w-6 h-6 text-purple-500" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">RL Training</p>
+                <p className="text-2xl font-bold">Learning</p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Continuous improvement from task execution
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Activity className="w-5 h-5 mr-2 text-primary" />
-              Live Task Execution
+              Live AI Agent Execution
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -208,6 +267,16 @@ export default function Dashboard() {
             <DeviceStatusPanel devices={devices} />
           </CardContent>
         </Card>
+      </div>
+
+      {/* Additional AI Agent Components */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          <LiveAgentActivity />
+        </div>
+        <div>
+          <PerformanceCharts />
+        </div>
       </div>
     </div>
   )
