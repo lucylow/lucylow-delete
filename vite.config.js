@@ -10,12 +10,13 @@ export default defineConfig({
     include: '**/*.{jsx,js}',
     jsxRuntime: 'automatic',
   })],
-  base: './',
+  base: '/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    sourcemap: false,
+    sourcemap: true,
     minify: 'terser',
+    target: 'es2019',
     rollupOptions: {
       output: {
         manualChunks: undefined,
