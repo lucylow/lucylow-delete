@@ -221,6 +221,7 @@ export const OMHAuthProvider = ({ children }) => {
 /**
  * Hook to use OMH authentication context
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const useOMHAuth = () => {
   const context = useContext(OMHAuthContext);
   if (!context) {
