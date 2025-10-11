@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { ethers } from 'ethers';
 import { CONTRACT_CONFIG, DEFAULT_CHAIN_ID } from '../blockchain/web3-config';
 
@@ -15,22 +15,7 @@ export const Web3Provider = ({ children }) => {
   const [balance, setBalance] = useState('0');
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (window.ethereum) {
-      const p = new ethers.providers.Web3Provider(window.ethereum);
-      setProvider(p);
-      checkAccounts();
-      window.ethereum.on('accountsChanged', checkAccounts);
-      window.ethereum.on('chainChanged', () => window.location.reload());
-    }
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener('accountsChanged', checkAccounts);
-      }
-    };
-  }, []);
-
-  const checkAccounts = async () => {
+  const checkAccounts = useCallback(async () => {
     try {
       const accs = await window.ethereum.request({ method: 'eth_accounts' });
       if (accs && accs.length) {
@@ -45,7 +30,22 @@ export const Web3Provider = ({ children }) => {
     } catch (e) {
       console.warn('checkAccounts', e);
     }
-  };
+  }, [provider]);
+
+  useEffect(() => {
+    if (window.ethereum) {
+      const p = new ethers.providers.Web3Provider(window.ethereum);
+      setProvider(p);
+      checkAccounts();
+      window.ethereum.on('accountsChanged', checkAccounts);
+      window.ethereum.on('chainChanged', () => window.location.reload());
+    }
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener('accountsChanged', checkAccounts);
+      }
+    };
+  }, [checkAccounts]);
 
   const connect = async () => {
     if (!window.ethereum) {

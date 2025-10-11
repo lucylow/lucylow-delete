@@ -3,7 +3,7 @@
  * Provides OAuth authentication via Open Mobile Hub for AutoRL
  */
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 const OMHAuthContext = createContext(null);
 
@@ -17,6 +17,26 @@ export const OMHAuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  /**
+   * Fetch user's current location from OMH
+   */
+  const fetchUserLocation = useCallback(async (token = accessToken) => {
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${OMH_API_BASE}/api/v1/maps/location`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (response.ok) {
+        const locationData = await response.json();
+        setLocation(locationData.location);
+      }
+    } catch (err) {
+      console.error('Failed to fetch location:', err);
+    }
+  }, [accessToken]);
+
   // Load token from localStorage on mount
   useEffect(() => {
     const storedToken = localStorage.getItem('omh_access_token');
@@ -29,7 +49,7 @@ export const OMHAuthProvider = ({ children }) => {
     }
     
     setLoading(false);
-  }, []);
+  }, [fetchUserLocation]);
 
   /**
    * Login with OMH OAuth
@@ -95,26 +115,6 @@ export const OMHAuthProvider = ({ children }) => {
     setLocation(null);
     localStorage.removeItem('omh_access_token');
     localStorage.removeItem('omh_user');
-  };
-
-  /**
-   * Fetch user's current location from OMH
-   */
-  const fetchUserLocation = async (token = accessToken) => {
-    if (!token) return;
-
-    try {
-      const response = await fetch(`${OMH_API_BASE}/api/v1/maps/location`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      if (response.ok) {
-        const locationData = await response.json();
-        setLocation(locationData.location);
-      }
-    } catch (err) {
-      console.error('Failed to fetch location:', err);
-    }
   };
 
   /**

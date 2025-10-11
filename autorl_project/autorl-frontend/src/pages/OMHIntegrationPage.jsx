@@ -3,7 +3,7 @@
  * Shows OMH authentication status, user profile, and location-aware features
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Container,
@@ -49,30 +49,30 @@ const OMHIntegrationPage = () => {
   const [autorlProfile, setAutoRLProfile] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadNearbyTasks();
-      loadAutoRLProfile();
-    }
-  }, [isAuthenticated]);
-
-  const loadNearbyTasks = async () => {
+  const loadNearbyTasks = useCallback(async () => {
     try {
       const data = await getNearbyTasks();
       setNearbyTasks(data.tasks || []);
     } catch (err) {
       console.error('Failed to load nearby tasks:', err);
     }
-  };
+  }, [getNearbyTasks]);
 
-  const loadAutoRLProfile = async () => {
+  const loadAutoRLProfile = useCallback(async () => {
     try {
       const data = await getAutoRLProfile();
       setAutoRLProfile(data);
     } catch (err) {
       console.error('Failed to load AutoRL profile:', err);
     }
-  };
+  }, [getAutoRLProfile]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadNearbyTasks();
+      loadAutoRLProfile();
+    }
+  }, [isAuthenticated, loadNearbyTasks, loadAutoRLProfile]);
 
   const handleRefreshLocation = async () => {
     setLoading(true);
