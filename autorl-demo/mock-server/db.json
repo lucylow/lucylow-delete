@@ -1,8 +1,0 @@
-{
-  "products": [
-    { "id": 1, "title": "Mock Product A", "price": 19.99 },
-    { "id": 2, "title": "Mock Product B", "price": 49.99 }
-  ],
-  "transactions": [],
-  "bookings": []
-}
