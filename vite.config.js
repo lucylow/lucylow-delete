@@ -6,7 +6,9 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react({
+    include: '**/*.{jsx,js}',
+  })],
   server: {
     host: true,
     port: 8080,
@@ -15,5 +17,9 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  esbuild: {
+    loader: 'jsx',
+    include: /src\/.*\.js$/,
   },
 });
