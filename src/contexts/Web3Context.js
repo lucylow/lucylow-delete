@@ -5,6 +5,17 @@ import { CONTRACT_CONFIG, DEFAULT_CHAIN_ID, SUPPORTED_CHAINS } from '../blockcha
 const Web3Context = createContext(null);
 export const useWeb3 = () => useContext(Web3Context);
 
+// Mock mode: Enable by setting VITE_MOCK_WEB3=true in .env or when MetaMask is not available
+const ENABLE_MOCK_MODE = import.meta.env.VITE_MOCK_WEB3 === 'true';
+
+// Mock wallet data for demo/development
+const MOCK_WALLET = {
+  account: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
+  balance: '12.5',
+  chainId: 1,
+  chainName: 'Ethereum Mainnet',
+};
+
 export const Web3Provider = ({ children }) => {
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
@@ -15,23 +26,39 @@ export const Web3Provider = ({ children }) => {
   const [balance, setBalance] = useState('0');
   const [error, setError] = useState(null);
   const [isMetaMaskInstalled, setIsMetaMaskInstalled] = useState(false);
+  const [mockMode, setMockMode] = useState(ENABLE_MOCK_MODE);
 
   // Check if MetaMask is installed
   useEffect(() => {
+    // Don't check for MetaMask in mock mode
+    if (mockMode) {
+      console.log('🎭 Web3 running in MOCK MODE - MetaMask not required');
+      setIsMetaMaskInstalled(false);
+      return;
+    }
+
     const checkMetaMask = () => {
       try {
         if (typeof window !== 'undefined' && typeof window.ethereum !== 'undefined') {
           setIsMetaMaskInstalled(true);
-          console.log('MetaMask detected');
-          setError(null); // Clear any previous errors
+          console.log('✅ MetaMask detected');
+          setError(null);
         } else {
           setIsMetaMaskInstalled(false);
-          console.log('MetaMask not detected - this is normal if not installed');
-          // Don't set error here - let users decide if they want to connect
+          console.log('ℹ️ MetaMask not detected - app will work with mock data');
+          // Enable mock mode if MetaMask is not available
+          if (!mockMode) {
+            setMockMode(true);
+            console.log('🎭 Automatically enabled mock mode');
+          }
         }
       } catch (e) {
         console.warn('Error checking MetaMask:', e);
         setIsMetaMaskInstalled(false);
+        if (!mockMode) {
+          setMockMode(true);
+          console.log('🎭 Enabled mock mode due to error');
+        }
       }
     };
 
@@ -48,10 +75,10 @@ export const Web3Provider = ({ children }) => {
         window.removeEventListener('ethereum#initialized', checkMetaMask);
       };
     }
-  }, []);
+  }, [mockMode]);
 
   const checkAccounts = useCallback(async () => {
-    if (typeof window === 'undefined' || !window.ethereum || !provider) return;
+    if (typeof window === 'undefined' || !window.ethereum || !provider || mockMode) return;
     
     try {
       const accs = await window.ethereum.request({ method: 'eth_accounts' });
@@ -88,11 +115,13 @@ export const Web3Provider = ({ children }) => {
       }
     } catch (e) {
       console.warn('checkAccounts error:', e);
-      // Don't set error for automatic checks - only for user-initiated actions
     }
-  }, [provider]);
+  }, [provider, mockMode]);
 
   useEffect(() => {
+    // Skip MetaMask initialization in mock mode
+    if (mockMode) return;
+
     if (typeof window !== 'undefined' && window.ethereum && isMetaMaskInstalled) {
       try {
         const p = new ethers.BrowserProvider(window.ethereum);
@@ -132,22 +161,30 @@ export const Web3Provider = ({ children }) => {
         };
       } catch (e) {
         console.error('Failed to initialize Web3 provider:', e);
-        // Don't set error for initialization failures - let user decide to connect
       }
     }
-  }, [checkAccounts, isMetaMaskInstalled]);
+  }, [checkAccounts, isMetaMaskInstalled, mockMode]);
 
   const connect = async () => {
     setError(null);
 
+    // Mock mode connection
+    if (mockMode) {
+      console.log('🎭 Connecting to mock wallet...');
+      setAccount(MOCK_WALLET.account);
+      setBalance(MOCK_WALLET.balance);
+      setChainId(MOCK_WALLET.chainId);
+      setIsConnected(true);
+      console.log('✅ Mock wallet connected:', MOCK_WALLET.account);
+      return;
+    }
+
     if (typeof window === 'undefined' || !window.ethereum) {
-      const errorMsg = 'MetaMask is not installed. Please install the MetaMask browser extension from https://metamask.io/download/';
-      setError(errorMsg);
-      console.error(errorMsg);
-      // Open MetaMask download page
-      if (typeof window !== 'undefined') {
-        window.open('https://metamask.io/download/', '_blank');
-      }
+      const errorMsg = 'MetaMask is not installed. Switching to mock mode...';
+      console.log(errorMsg);
+      setMockMode(true);
+      // Auto-connect in mock mode
+      setTimeout(() => connect(), 100);
       return;
     }
 
@@ -226,6 +263,13 @@ export const Web3Provider = ({ children }) => {
   };
 
   const switchNetwork = async (targetChainId) => {
+    // Mock mode network switching
+    if (mockMode) {
+      console.log(`🎭 Mock: Switched to chain ${targetChainId}`);
+      setChainId(targetChainId);
+      return true;
+    }
+
     if (typeof window === 'undefined' || !window.ethereum) {
       setError('MetaMask is not installed');
       return false;
@@ -242,7 +286,6 @@ export const Web3Provider = ({ children }) => {
       console.log(`Switched to chain ${targetChainId}`);
       return true;
     } catch (switchError) {
-      // This error code indicates that the chain has not been added to MetaMask
       if (switchError.code === 4902) {
         try {
           const chainConfig = SUPPORTED_CHAINS[targetChainId];
@@ -275,8 +318,17 @@ export const Web3Provider = ({ children }) => {
   };
 
   const getNetworkName = () => {
-    if (!chainId) return 'Not connected';
+    if (!chainId) return mockMode ? 'Mock Network (Demo Mode)' : 'Not connected';
     return SUPPORTED_CHAINS[chainId]?.name || `Unknown (${chainId})`;
+  };
+
+  const toggleMockMode = () => {
+    const newMockMode = !mockMode;
+    setMockMode(newMockMode);
+    console.log(`🎭 Mock mode ${newMockMode ? 'enabled' : 'disabled'}`);
+    
+    // Reset connection state when toggling
+    disconnect();
   };
 
   return (
@@ -294,7 +346,9 @@ export const Web3Provider = ({ children }) => {
       switchNetwork,
       getNetworkName,
       isMetaMaskInstalled,
-      supportedChains: SUPPORTED_CHAINS
+      supportedChains: SUPPORTED_CHAINS,
+      mockMode,
+      toggleMockMode
     }}>
       {children}
     </Web3Context.Provider>
