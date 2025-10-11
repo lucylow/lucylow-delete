@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -26,60 +26,134 @@ import {
 export default function AutoRLLandingPage() {
   const [selectedApp, setSelectedApp] = useState('banking');
   const [isAnimating, setIsAnimating] = useState(false);
+  const [executionStep, setExecutionStep] = useState(0);
+  const [showCursor, setShowCursor] = useState(false);
+  const [cursorPosition, setCursorPosition] = useState({ x: 50, y: 50 });
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [typingText, setTypingText] = useState('');
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const appConfigs = {
     banking: {
       title: 'Banking App',
       icon: '🏦',
       message: 'AutoRL is managing your banking transactions...',
+      task: 'Transfer $100 to savings account',
       content: [
-        { icon: '🏠', text: 'Home', color: 'bg-blue-500' },
-        { icon: '👤', text: 'Jane Doe', color: 'bg-gray-400' },
-        { icon: '💰', text: '$ 2,450.00', color: 'bg-green-500' },
-        { icon: '📊', text: 'Transactions', color: 'bg-blue-600' },
-        { icon: '⚙️', text: 'Settings', color: 'bg-gray-500' }
+        { icon: '🏠', text: 'Home', color: 'bg-blue-500', action: 'navigate' },
+        { icon: '👤', text: 'Jane Doe', color: 'bg-blue-400', action: 'select' },
+        { icon: '💰', text: '$ 2,450.00', color: 'bg-blue-600', action: 'view' },
+        { icon: '📊', text: 'Transactions', color: 'bg-blue-700', action: 'scroll' },
+        { icon: '💸', text: 'Transfer', color: 'bg-blue-800', action: 'tap' }
       ],
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200'
+      bgColor: 'from-blue-50 to-blue-100',
+      borderColor: 'border-blue-300'
     },
     calendar: {
       title: 'Calendar App',
       icon: '📅',
       message: 'AutoRL is scheduling your appointments...',
+      task: 'Create meeting for tomorrow at 2PM',
       content: [
-        { icon: '📅', text: 'Today', color: 'bg-blue-500' },
-        { icon: '👥', text: 'Team Meeting', color: 'bg-purple-500' },
-        { icon: '☕', text: 'Coffee Break', color: 'bg-orange-500' },
-        { icon: '💼', text: 'Client Call', color: 'bg-green-500' },
-        { icon: '➕', text: 'Add Event', color: 'bg-blue-600' }
+        { icon: '📅', text: 'Today', color: 'bg-blue-500', action: 'navigate' },
+        { icon: '👥', text: 'Team Meeting', color: 'bg-blue-600', action: 'view' },
+        { icon: '☕', text: 'Coffee Break', color: 'bg-blue-400', action: 'select' },
+        { icon: '💼', text: 'Client Call', color: 'bg-blue-700', action: 'scroll' },
+        { icon: '➕', text: 'Add Event', color: 'bg-blue-800', action: 'tap' }
       ],
-      bgColor: 'bg-purple-50',
-      borderColor: 'border-purple-200'
+      bgColor: 'from-blue-50 to-indigo-100',
+      borderColor: 'border-indigo-300'
     },
     ecommerce: {
       title: 'E-Commerce App',
       icon: '🛒',
       message: 'AutoRL is shopping for you...',
+      task: 'Add wireless headphones to cart',
       content: [
-        { icon: '🏠', text: 'Home', color: 'bg-blue-500' },
-        { icon: '🛍️', text: 'Cart (3)', color: 'bg-red-500' },
-        { icon: '💳', text: 'Checkout', color: 'bg-green-500' },
-        { icon: '📦', text: 'Orders', color: 'bg-purple-500' },
-        { icon: '⭐', text: 'Wishlist', color: 'bg-yellow-500' }
+        { icon: '🏠', text: 'Home', color: 'bg-blue-500', action: 'navigate' },
+        { icon: '🔍', text: 'Search', color: 'bg-blue-600', action: 'type' },
+        { icon: '🎧', text: 'Headphones', color: 'bg-blue-700', action: 'select' },
+        { icon: '🛍️', text: 'Add to Cart', color: 'bg-blue-800', action: 'tap' },
+        { icon: '✓', text: 'Done', color: 'bg-blue-900', action: 'complete' }
       ],
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200'
+      bgColor: 'from-blue-50 to-cyan-100',
+      borderColor: 'border-cyan-300'
     }
   };
 
   const handleAppChange = (app) => {
-    if (app === selectedApp) return; // Prevent unnecessary re-renders
+    if (app === selectedApp) return;
     
     setIsAnimating(true);
+    setExecutionStep(0);
+    setShowCursor(false);
+    setSelectedItem(null);
+    setTypingText('');
+    setIsExecuting(false);
+    
     setTimeout(() => {
       setSelectedApp(app);
       setIsAnimating(false);
-    }, 150);
+    }, 300);
+  };
+
+  // Auto-execute demo
+  useEffect(() => {
+    if (!isExecuting) return;
+
+    const currentApp = appConfigs[selectedApp];
+    if (executionStep >= currentApp.content.length) {
+      setTimeout(() => {
+        setIsExecuting(false);
+        setExecutionStep(0);
+        setShowCursor(false);
+        setSelectedItem(null);
+      }, 2000);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      const item = currentApp.content[executionStep];
+      
+      // Animate cursor movement
+      setShowCursor(true);
+      setCursorPosition({ 
+        x: 20 + Math.random() * 60, 
+        y: 30 + (executionStep * 12) 
+      });
+
+      // Handle different actions
+      if (item.action === 'type') {
+        let i = 0;
+        const text = 'Wireless headphones...';
+        const typeInterval = setInterval(() => {
+          if (i < text.length) {
+            setTypingText(prev => prev + text[i]);
+            i++;
+          } else {
+            clearInterval(typeInterval);
+            setTimeout(() => setTypingText(''), 500);
+          }
+        }, 100);
+      }
+
+      // Highlight selected item
+      setSelectedItem(executionStep);
+      
+      setTimeout(() => {
+        setSelectedItem(null);
+        setExecutionStep(prev => prev + 1);
+      }, 1500);
+    }, 1800);
+
+    return () => clearTimeout(timer);
+  }, [executionStep, isExecuting, selectedApp, appConfigs]);
+
+  const startDemo = () => {
+    setIsExecuting(true);
+    setExecutionStep(0);
+    setSelectedItem(null);
+    setTypingText('');
   };
 
   return (
@@ -208,58 +282,179 @@ export default function AutoRLLandingPage() {
             </div>
             
             {/* Interactive Phone Mockup */}
-            <div className="relative max-w-sm mx-auto">
-              <div className="bg-black rounded-[3rem] p-2 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-                <div className={`rounded-[2.5rem] p-6 h-96 flex flex-col transition-all duration-500 ${
+            <div className="relative max-w-sm mx-auto group">
+              {/* Phone Device */}
+              <div className="bg-gradient-to-br from-gray-900 to-black rounded-[3rem] p-3 shadow-2xl transform transition-all duration-500 group-hover:scale-105 group-hover:shadow-blue-500/30">
+                {/* Phone Screen */}
+                <div className={`relative rounded-[2.5rem] p-6 h-[600px] flex flex-col overflow-hidden transition-all duration-500 bg-gradient-to-br ${
                   isAnimating ? 'opacity-50 scale-95' : 'opacity-100 scale-100'
                 } ${appConfigs[selectedApp].bgColor}`}>
+                  
                   {/* Status Bar */}
-                  <div className="flex justify-between items-center mb-4 text-xs text-gray-600">
-                    <span>9:41</span>
-                    <span className="text-lg">{appConfigs[selectedApp].icon}</span>
-                    <span>100%</span>
+                  <div className="flex justify-between items-center mb-4 text-xs font-medium">
+                    <div className="flex items-center gap-1">
+                      <div className="w-4 h-2 bg-blue-600 rounded-sm"></div>
+                      <div className="w-4 h-2 bg-blue-600 rounded-sm"></div>
+                      <div className="w-4 h-2 bg-blue-600 rounded-sm"></div>
+                      <span className="ml-1 text-gray-700">9:41</span>
+                    </div>
+                    <span className="text-2xl animate-float">{appConfigs[selectedApp].icon}</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-gray-700">100%</span>
+                      <div className="w-6 h-3 border-2 border-blue-600 rounded-sm relative">
+                        <div className="absolute inset-0.5 bg-blue-600 rounded-[1px]"></div>
+                      </div>
+                    </div>
                   </div>
                   
-                  {/* App Header */}
-                  <div className={`rounded-lg p-4 mb-4 border ${appConfigs[selectedApp].borderColor}`}>
-                    <p className="text-sm text-gray-700 font-medium">
-                      {appConfigs[selectedApp].title}
+                  {/* Task Banner */}
+                  <div className={`rounded-xl p-3 mb-4 border-2 shadow-lg bg-white/90 backdrop-blur-sm ${appConfigs[selectedApp].borderColor} ${
+                    isExecuting ? 'ring-2 ring-blue-500 ring-offset-2' : ''
+                  }`}>
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-xs text-blue-600 font-bold uppercase tracking-wide">
+                        {appConfigs[selectedApp].title}
+                      </p>
+                      {isExecuting && (
+                        <div className="flex gap-1">
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse delay-75"></div>
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse delay-150"></div>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-700 font-semibold">
+                      {isExecuting ? `Task: ${appConfigs[selectedApp].task}` : appConfigs[selectedApp].message}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {appConfigs[selectedApp].message}
-                    </p>
+                    {isExecuting && (
+                      <div className="mt-2 bg-blue-100 rounded-full h-1 overflow-hidden">
+                        <div 
+                          className="h-full bg-blue-600 transition-all duration-1000 ease-out"
+                          style={{ width: `${(executionStep / appConfigs[selectedApp].content.length) * 100}%` }}
+                        ></div>
+                      </div>
+                    )}
                   </div>
                   
-                  {/* App Content */}
-                  <div className="flex-1 space-y-3">
+                  {/* App Content with Interactions */}
+                  <div className="flex-1 space-y-2 relative">
+                    {typingText && (
+                      <div className="absolute top-0 left-0 right-0 bg-white rounded-lg p-3 shadow-lg border-2 border-blue-400 z-20 animate-slide-in-right">
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 bg-blue-500 rounded flex items-center justify-center text-xs">🔍</div>
+                          <span className="text-sm text-gray-700">{typingText}</span>
+                          <span className="animate-pulse">|</span>
+                        </div>
+                      </div>
+                    )}
+                    
                     {appConfigs[selectedApp].content.map((item, index) => (
                       <div 
                         key={index}
-                        className="flex items-center gap-3 animate-fade-in"
-                        style={{ animationDelay: `${index * 100}ms` }}
+                        className={`relative flex items-center gap-3 p-3 rounded-lg transition-all duration-300 ${
+                          selectedItem === index 
+                            ? 'bg-blue-200 scale-105 shadow-lg ring-2 ring-blue-500 z-10' 
+                            : 'bg-white/60 hover:bg-white/80'
+                        } ${isAnimating ? 'opacity-0' : 'opacity-100 animate-slide-in-left'}`}
+                        style={{ 
+                          animationDelay: `${index * 80}ms`,
+                          transform: selectedItem === index ? 'translateX(5px)' : 'none'
+                        }}
                       >
-                        <div className={`w-6 h-6 ${item.color} rounded flex items-center justify-center text-xs`}>
+                        <div className={`w-8 h-8 ${item.color} rounded-lg flex items-center justify-center text-sm shadow-md transition-transform ${
+                          selectedItem === index ? 'scale-110 animate-pulse' : ''
+                        }`}>
                           {item.icon}
                         </div>
-                        <span className="text-gray-600 text-sm">{item.text}</span>
+                        <span className={`text-sm font-medium ${
+                          selectedItem === index ? 'text-blue-900' : 'text-gray-700'
+                        }`}>
+                          {item.text}
+                        </span>
+                        {selectedItem === index && (
+                          <div className="ml-auto">
+                            <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center animate-ping absolute right-3">
+                              <span className="text-white text-xs">✓</span>
+                            </div>
+                            <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center relative">
+                              <span className="text-white text-xs">✓</span>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
                   
-                  {/* AutoRL Indicator */}
-                  <div className="mt-4 flex items-center justify-center gap-2 text-xs text-blue-600">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                    <span>AutoRL Active</span>
+                  {/* Bottom Controls */}
+                  <div className="mt-4 flex items-center justify-between">
+                    <button
+                      onClick={startDemo}
+                      disabled={isExecuting}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-sm transition-all ${
+                        isExecuting 
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                          : 'bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 shadow-lg hover:shadow-blue-500/50'
+                      }`}
+                    >
+                      <Play className="w-4 h-4" />
+                      {isExecuting ? 'Running...' : 'Start Demo'}
+                    </button>
+                    
+                    <div className="flex items-center gap-2 text-xs">
+                      <div className={`w-2 h-2 rounded-full ${isExecuting ? 'bg-blue-500 animate-pulse' : 'bg-gray-400'}`}></div>
+                      <span className={`font-medium ${isExecuting ? 'text-blue-600' : 'text-gray-500'}`}>
+                        {isExecuting ? 'AutoRL Active' : 'Ready'}
+                      </span>
+                    </div>
                   </div>
+                  
+                  {/* Animated Cursor */}
+                  {showCursor && (
+                    <div 
+                      className="absolute w-8 h-8 pointer-events-none transition-all duration-500 ease-out z-30"
+                      style={{ 
+                        left: `${cursorPosition.x}%`, 
+                        top: `${cursorPosition.y}%` 
+                      }}
+                    >
+                      <div className="relative">
+                        <div className="absolute w-8 h-8 bg-blue-500 rounded-full opacity-30 animate-ping"></div>
+                        <div className="absolute w-8 h-8 bg-blue-600 rounded-full opacity-70 animate-pulse"></div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-3 h-3 bg-white rounded-full border-2 border-blue-600"></div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               
               {/* Floating Action Indicators */}
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center animate-bounce">
-                <span className="text-white text-sm">🤖</span>
+              <div className="absolute -top-4 -right-4 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/50 animate-bounce">
+                <span className="text-white text-xl">🤖</span>
               </div>
-              <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center animate-pulse">
-                <span className="text-white text-xs">✓</span>
+              <div className="absolute -bottom-4 -left-4 w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/50 animate-pulse">
+                <Brain className="w-5 h-5 text-white" />
+              </div>
+              <div className={`absolute top-1/4 -left-8 transition-all duration-500 ${
+                isExecuting ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+              }`}>
+                <div className="bg-blue-600 text-white px-3 py-2 rounded-lg shadow-lg text-xs font-semibold">
+                  Vision Active
+                  <div className="absolute right-0 top-1/2 transform translate-x-full -translate-y-1/2">
+                    <div className="w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-l-4 border-l-blue-600"></div>
+                  </div>
+                </div>
+              </div>
+              <div className={`absolute top-1/2 -right-8 transition-all duration-500 delay-300 ${
+                isExecuting ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
+              }`}>
+                <div className="bg-cyan-600 text-white px-3 py-2 rounded-lg shadow-lg text-xs font-semibold">
+                  Learning
+                  <div className="absolute left-0 top-1/2 transform -translate-x-full -translate-y-1/2">
+                    <div className="w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-r-4 border-r-cyan-600"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

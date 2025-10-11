@@ -19,31 +19,39 @@ export const Web3Provider = ({ children }) => {
   // Check if MetaMask is installed
   useEffect(() => {
     const checkMetaMask = () => {
-      if (typeof window.ethereum !== 'undefined') {
-        setIsMetaMaskInstalled(true);
-        console.log('MetaMask detected');
-      } else {
+      try {
+        if (typeof window !== 'undefined' && typeof window.ethereum !== 'undefined') {
+          setIsMetaMaskInstalled(true);
+          console.log('MetaMask detected');
+          setError(null); // Clear any previous errors
+        } else {
+          setIsMetaMaskInstalled(false);
+          console.log('MetaMask not detected - this is normal if not installed');
+          // Don't set error here - let users decide if they want to connect
+        }
+      } catch (e) {
+        console.warn('Error checking MetaMask:', e);
         setIsMetaMaskInstalled(false);
-        console.warn('MetaMask not detected');
-        setError('MetaMask is not installed. Please install MetaMask extension to connect your wallet.');
       }
     };
 
     checkMetaMask();
 
     // Listen for MetaMask installation
-    window.addEventListener('ethereum#initialized', checkMetaMask, { once: true });
+    if (typeof window !== 'undefined') {
+      window.addEventListener('ethereum#initialized', checkMetaMask, { once: true });
 
-    // Backup check after 3 seconds
-    setTimeout(checkMetaMask, 3000);
+      // Backup check after 3 seconds
+      setTimeout(checkMetaMask, 3000);
 
-    return () => {
-      window.removeEventListener('ethereum#initialized', checkMetaMask);
-    };
+      return () => {
+        window.removeEventListener('ethereum#initialized', checkMetaMask);
+      };
+    }
   }, []);
 
   const checkAccounts = useCallback(async () => {
-    if (!window.ethereum || !provider) return;
+    if (typeof window === 'undefined' || !window.ethereum || !provider) return;
     
     try {
       const accs = await window.ethereum.request({ method: 'eth_accounts' });
@@ -80,12 +88,12 @@ export const Web3Provider = ({ children }) => {
       }
     } catch (e) {
       console.warn('checkAccounts error:', e);
-      setError('Failed to check account status');
+      // Don't set error for automatic checks - only for user-initiated actions
     }
   }, [provider]);
 
   useEffect(() => {
-    if (window.ethereum && isMetaMaskInstalled) {
+    if (typeof window !== 'undefined' && window.ethereum && isMetaMaskInstalled) {
       try {
         const p = new ethers.BrowserProvider(window.ethereum);
         setProvider(p);
@@ -116,7 +124,7 @@ export const Web3Provider = ({ children }) => {
         window.ethereum.on('disconnect', handleDisconnect);
 
         return () => {
-          if (window.ethereum.removeListener) {
+          if (window.ethereum && window.ethereum.removeListener) {
             window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
             window.ethereum.removeListener('chainChanged', handleChainChanged);
             window.ethereum.removeListener('disconnect', handleDisconnect);
@@ -124,7 +132,7 @@ export const Web3Provider = ({ children }) => {
         };
       } catch (e) {
         console.error('Failed to initialize Web3 provider:', e);
-        setError('Failed to initialize Web3 provider: ' + e.message);
+        // Don't set error for initialization failures - let user decide to connect
       }
     }
   }, [checkAccounts, isMetaMaskInstalled]);
@@ -132,12 +140,14 @@ export const Web3Provider = ({ children }) => {
   const connect = async () => {
     setError(null);
 
-    if (!window.ethereum) {
+    if (typeof window === 'undefined' || !window.ethereum) {
       const errorMsg = 'MetaMask is not installed. Please install the MetaMask browser extension from https://metamask.io/download/';
       setError(errorMsg);
       console.error(errorMsg);
       // Open MetaMask download page
-      window.open('https://metamask.io/download/', '_blank');
+      if (typeof window !== 'undefined') {
+        window.open('https://metamask.io/download/', '_blank');
+      }
       return;
     }
 
@@ -216,7 +226,7 @@ export const Web3Provider = ({ children }) => {
   };
 
   const switchNetwork = async (targetChainId) => {
-    if (!window.ethereum) {
+    if (typeof window === 'undefined' || !window.ethereum) {
       setError('MetaMask is not installed');
       return false;
     }

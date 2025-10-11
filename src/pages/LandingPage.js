@@ -11,7 +11,7 @@ const LandingPage = () => (
         Welcome to AutoRL, the open-source mobile automation agent for Android and iOS. Harness the power of AI, RL, and LLMs to automate mobile workflows and tests.
       </Typography>
       <Box sx={{ textAlign: 'center', mt: 4 }}>
-        <Button variant="contained" color="primary" href="/dashboard">
+        <Button variant="contained" color="primary" href="/app/dashboard">
           Go to Dashboard
         </Button>
       </Box>

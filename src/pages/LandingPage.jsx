@@ -27,12 +27,12 @@ export default function LandingPage() {
             to automate complex mobile workflows with natural language commands.
           </p>
           <div className="flex gap-4 justify-center">
-            <Link to="/dashboard">
+            <Link to="/app/dashboard">
               <Button size="lg" className="text-lg px-8">
                 Get Started
               </Button>
             </Link>
-            <Link to="/docs">
+            <Link to="/app/docs">
               <Button size="lg" variant="outline" className="text-lg px-8">
                 Documentation
               </Button>

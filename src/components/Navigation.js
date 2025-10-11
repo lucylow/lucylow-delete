@@ -140,7 +140,7 @@ const Navigation = () => {
             <IconButton 
               color="inherit" 
               aria-label="account" 
-              onClick={() => navigate('/profile')}
+              onClick={() => navigate('/app/profile')}
               sx={{
                 transition: 'all 0.3s',
                 '&:hover': {

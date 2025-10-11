@@ -5,8 +5,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 // Import page components
 import Navigation from './components/Navigation.js';
-import AutoRLLandingPage from './pages/AutoRLLandingPage';
+import LandingPageWrapper from './components/LandingPageWrapper';
 import Dashboard from './pages/Dashboard';
+import ErrorBoundary from './components/ErrorBoundary';
 import DeviceManager from './pages/DeviceManager';
 import TaskExecution from './pages/TaskExecution';
 import AITraining from './pages/AITraining';
@@ -135,40 +136,42 @@ function App() {
       <Web3Provider>
         <OMHAuthProvider>
           <div className="App">
-            <Routes>
-              <Route path="/" element={<AutoRLLandingPage />} />
-              <Route path="/app/*" element={
-                <>
-                  <Navigation />
-                  <Routes>
-                    <Route path="dashboard" element={<Dashboard />} />
-                    <Route path="devices" element={<DeviceManager />} />
-                    <Route path="tasks" element={<TaskExecution />} />
-                    <Route path="ai-training" element={<AITraining />} />
-                    <Route path="analytics" element={<Analytics />} />
-                    <Route path="blockchain" element={<BlockchainEnhancedDashboard />} />
-                    <Route path="marketplace" element={<Marketplace />} />
-                    <Route path="omh-integration" element={<OMHIntegrationPage />} />
-                    <Route path="docs" element={<Documentation />} />
-                    <Route path="settings" element={<Settings />} />
-                    <Route path="profile" element={<Profile />} />
-                    <Route path="*" element={<Dashboard />} />
-                  </Routes>
-                </>
-              } />
-              {/* Legacy routes for backward compatibility */}
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/devices" element={<DeviceManager />} />
-              <Route path="/tasks" element={<TaskExecution />} />
-              <Route path="/ai-training" element={<AITraining />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/blockchain" element={<BlockchainEnhancedDashboard />} />
-              <Route path="/marketplace" element={<Marketplace />} />
-              <Route path="/omh-integration" element={<OMHIntegrationPage />} />
-              <Route path="/docs" element={<Documentation />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/profile" element={<Profile />} />
-            </Routes>
+            <ErrorBoundary>
+              <Routes>
+                <Route path="/" element={<LandingPageWrapper />} />
+                <Route path="/app/*" element={
+                  <>
+                    <Navigation />
+                    <Routes>
+                      <Route path="dashboard" element={<Dashboard />} />
+                      <Route path="devices" element={<DeviceManager />} />
+                      <Route path="tasks" element={<TaskExecution />} />
+                      <Route path="ai-training" element={<AITraining />} />
+                      <Route path="analytics" element={<Analytics />} />
+                      <Route path="blockchain" element={<BlockchainEnhancedDashboard />} />
+                      <Route path="marketplace" element={<Marketplace />} />
+                      <Route path="omh-integration" element={<OMHIntegrationPage />} />
+                      <Route path="docs" element={<Documentation />} />
+                      <Route path="settings" element={<Settings />} />
+                      <Route path="profile" element={<Profile />} />
+                      <Route path="*" element={<Dashboard />} />
+                    </Routes>
+                  </>
+                } />
+                {/* Legacy routes for backward compatibility */}
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/devices" element={<DeviceManager />} />
+                <Route path="/tasks" element={<TaskExecution />} />
+                <Route path="/ai-training" element={<AITraining />} />
+                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/blockchain" element={<BlockchainEnhancedDashboard />} />
+                <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/omh-integration" element={<OMHIntegrationPage />} />
+                <Route path="/docs" element={<Documentation />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/profile" element={<Profile />} />
+              </Routes>
+            </ErrorBoundary>
           </div>
         </OMHAuthProvider>
       </Web3Provider>
