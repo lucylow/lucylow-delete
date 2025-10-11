@@ -67,7 +67,7 @@ export const Web3Provider = ({ children }) => {
       Object.keys(CONTRACT_CONFIG).forEach(k => {
         const cfg = CONTRACT_CONFIG[k];
         if (cfg.abi && cfg.address) {
-          try{ created[k] = new ethers.Contract(cfg.address, cfg.abi, s);}catch(e){}
+          try{ created[k] = new ethers.Contract(cfg.address, cfg.abi, s);}catch(e){ console.warn('Failed to create contract:', k, e); }
         }
       });
       setContracts(created);

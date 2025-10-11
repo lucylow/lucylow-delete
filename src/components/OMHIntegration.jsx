@@ -3,6 +3,7 @@
  * 
  * Provides UI for OMH authentication and maps features integrated with AutoRL.
  */
+/* eslint-disable no-undef */
 
 import React, { useState, useEffect } from 'react';
 import {

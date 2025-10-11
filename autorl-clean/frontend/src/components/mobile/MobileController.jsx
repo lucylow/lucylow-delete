@@ -14,7 +14,6 @@ export default function MobileController({ mobileRef, onEvent, disabled = false 
     if (isRunning) return;
     setIsRunning(true);
     
-    const runId = Date.now();
     onEvent?.({ event: 'perception', text: 'Capturing screenshot and OCR...', timestamp: Date.now() });
 
     // small delay
@@ -79,7 +78,7 @@ export default function MobileController({ mobileRef, onEvent, disabled = false 
       await new Promise(r => setTimeout(r, 600));
       
       // type amount
-      const res = await mobileRef.current.type('amount', '$20.00');
+      await mobileRef.current.type('amount', '$20.00');
       window.dispatchEvent(new CustomEvent('autorlgesture', { 
         detail: { type: 'type', x: 180, y: 320, text: '$20.00' } 
       }));

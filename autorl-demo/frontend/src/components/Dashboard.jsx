@@ -1,9 +1,10 @@
+/* eslint-disable no-undef */
 import React, { useEffect, useRef, useState } from 'react';
 import ThoughtBubbles from './ThoughtBubbles';
 
-const WS_URL = (process.env.REACT_APP_WS_URL) ? process.env.REACT_APP_WS_URL : 'ws://localhost:5000/ws';
+const WS_URL = (typeof process !== 'undefined' && process.env.REACT_APP_WS_URL) || 'ws://localhost:5000/ws';
 // Default API base for demo points to the local mock server at port 4000
-const API_BASE = (process.env.REACT_APP_API_URL) ? process.env.REACT_APP_API_URL : 'http://localhost:4000';
+const API_BASE = (typeof process !== 'undefined' && process.env.REACT_APP_API_URL) || 'http://localhost:4000';
 
 export default function Dashboard(){
   const [events, setEvents] = useState([]);

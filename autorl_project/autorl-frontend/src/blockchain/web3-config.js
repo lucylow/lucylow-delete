@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 export const CONTRACT_CONFIG = {
   ACHIEVEMENT_NFT: {
     address: (typeof process !== 'undefined' && process.env.REACT_APP_NFT_CONTRACT_ADDRESS) || '0x0000000000000000000000000000000000000000',
