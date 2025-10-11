@@ -1,42 +1,159 @@
 import React from 'react';
-import { Box, Container, Typography, Grid, Card, CardContent, List, ListItem, ListItemText } from '@mui/material';
-import { Description } from '@mui/icons-material';
+import { 
+  Box, 
+  Container, 
+  Typography, 
+  Grid, 
+  Card, 
+  CardContent, 
+  List, 
+  ListItem, 
+  ListItemText,
+  Paper
+} from '@mui/material';
+import { 
+  Description, 
+  Code, 
+  FlashOn, 
+  Security,
+  MenuBook 
+} from '@mui/icons-material';
 
-const Documentation = () => (
-  <Box sx={{ pt: 10, pb: 4 }}>
-    <Container maxWidth="xl">
-      <Typography variant="h4" fontWeight="bold" sx={{ mb: 4 }}>
-        Documentation
-      </Typography>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 2 }}>API Reference</Typography>
-              <List>
-                <ListItem><ListItemText primary="POST /api/v1/execute" secondary="Execute mobile automation task" /></ListItem>
-                <ListItem><ListItemText primary="GET /api/v1/devices" secondary="List connected devices" /></ListItem>
-                <ListItem><ListItemText primary="GET /api/v1/tasks/{id}" secondary="Get task status" /></ListItem>
-              </List>
-            </CardContent>
-          </Card>
+const Documentation = () => {
+  const sections = [
+    {
+      title: 'Getting Started',
+      icon: FlashOn,
+      color: '#00e676',
+      items: [
+        { primary: 'Installation & Setup', secondary: 'Set up AutoRL on your system' },
+        { primary: 'Connecting Devices', secondary: 'Link your Android/iOS devices' },
+        { primary: 'Creating Your First Task', secondary: 'Build your first automation workflow' },
+        { primary: 'Understanding the Dashboard', secondary: 'Navigate the AutoRL interface' }
+      ]
+    },
+    {
+      title: 'API Reference',
+      icon: Code,
+      color: '#2196f3',
+      items: [
+        { primary: 'POST /api/v1/execute', secondary: 'Execute automation task' },
+        { primary: 'GET /api/v1/devices', secondary: 'List connected devices' },
+        { primary: 'GET /api/v1/tasks/{id}', secondary: 'Get task status' },
+        { primary: 'POST /api/v1/train', secondary: 'Start RL training' }
+      ]
+    },
+    {
+      title: 'Best Practices',
+      icon: MenuBook,
+      color: '#ff9800',
+      items: [
+        { primary: 'Writing Effective Task Descriptions', secondary: 'Tips for natural language tasks' },
+        { primary: 'Device Management Tips', secondary: 'Optimize your device setup' },
+        { primary: 'Optimizing Task Performance', secondary: 'Improve execution speed' },
+        { primary: 'Debugging Failed Tasks', secondary: 'Troubleshooting guide' }
+      ]
+    },
+    {
+      title: 'Security',
+      icon: Security,
+      color: '#f44336',
+      items: [
+        { primary: 'PII Data Masking', secondary: 'Protect sensitive information' },
+        { primary: 'Safety Guardrails', secondary: 'Built-in security measures' },
+        { primary: 'Secure API Access', secondary: 'Authentication and authorization' },
+        { primary: 'Privacy Guidelines', secondary: 'Data handling best practices' }
+      ]
+    }
+  ];
+
+  return (
+    <Box sx={{ pt: 10, pb: 4 }}>
+      <Container maxWidth="xl">
+        <Box sx={{ mb: 6 }}>
+          <Typography variant="h3" fontWeight="bold" sx={{ mb: 2 }}>
+            Documentation
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Guides, API reference, and best practices for AutoRL Platform
+          </Typography>
+        </Box>
+
+        <Grid container spacing={3}>
+          {sections.map((section) => {
+            const IconComponent = section.icon;
+            return (
+              <Grid item xs={12} md={6} key={section.title}>
+                <Card sx={{ height: '100%', transition: 'all 0.3s', '&:hover': { transform: 'translateY(-4px)', boxShadow: 4 } }}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <IconComponent sx={{ color: section.color, mr: 1.5, fontSize: 28 }} />
+                      <Typography variant="h6" fontWeight="600">
+                        {section.title}
+                      </Typography>
+                    </Box>
+                    <List dense>
+                      {section.items.map((item, index) => (
+                        <ListItem 
+                          key={index}
+                          sx={{ 
+                            borderRadius: 1,
+                            mb: 0.5,
+                            transition: 'all 0.2s',
+                            '&:hover': { 
+                              bgcolor: 'action.hover',
+                              cursor: 'pointer',
+                              pl: 3
+                            }
+                          }}
+                        >
+                          <ListItemText 
+                            primary={item.primary} 
+                            secondary={item.secondary}
+                            primaryTypographyProps={{ fontWeight: 500, fontSize: '0.95rem' }}
+                            secondaryTypographyProps={{ fontSize: '0.85rem' }}
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                  </CardContent>
+                </Card>
+              </Grid>
+            );
+          })}
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 2 }}>Quick Start</Typography>
-              <Typography variant="body2" color="text.secondary">
-                1. Connect your Android/iOS device<br/>
-                2. Create a natural language task<br/>
-                3. Monitor real-time execution<br/>
-                4. Review performance analytics
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-    </Container>
-  </Box>
-);
+
+        <Paper sx={{ mt: 4, p: 4, bgcolor: 'background.paper' }} elevation={2}>
+          <Typography variant="h5" fontWeight="600" sx={{ mb: 3 }}>
+            Quick Start Example
+          </Typography>
+          <Paper sx={{ bgcolor: '#1a1a1a', p: 3, borderRadius: 2, border: '1px solid rgba(255,255,255,0.1)' }}>
+            <Typography component="pre" sx={{ 
+              fontFamily: 'monospace', 
+              fontSize: '0.9rem', 
+              color: '#00e676',
+              overflow: 'auto',
+              m: 0
+            }}>
+{`// Example: Execute a task
+const response = await fetch('/api/v1/execute', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    device_id: 'android_pixel_7',
+    task_description: 'Open Instagram and like the latest post',
+    max_steps: 10
+  })
+});
+
+const result = await response.json();
+console.log(result);`}
+            </Typography>
+          </Paper>
+        </Paper>
+      </Container>
+    </Box>
+  );
+};
 
 export default Documentation;

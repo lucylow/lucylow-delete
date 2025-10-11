@@ -2,18 +2,120 @@ import React from 'react';
 import { useWeb3 } from '../../contexts/Web3Context';
 
 export default function WalletConnection(){
-  const { account, isConnected, connect, disconnect, error } = useWeb3();
+  const { account, isConnected, connect, disconnect, error, isMetaMaskInstalled, balance } = useWeb3();
+  
   return (
-    <div style={{display:'flex',gap:8,alignItems:'center'}}>
-      {error && <div style={{color:'red'}}>{error}</div>}
-      {!isConnected ? (
-        <button onClick={connect} style={{padding:8,borderRadius:6,background:'#00e3ff'}}>Connect Wallet</button>
-      ) : (
-        <div style={{display:'flex',gap:8,alignItems:'center'}}>
-          <div style={{fontWeight:700}}>{String(account).slice(0,8)}...</div>
-          <button onClick={disconnect} style={{padding:6}}>Disconnect</button>
+    <div style={{display:'flex',flexDirection:'column',gap:8,alignItems:'flex-start',maxWidth:400}}>
+      {error && (
+        <div style={{
+          color:'#ff4444',
+          background:'#ffeeee',
+          padding:12,
+          borderRadius:8,
+          fontSize:14,
+          border:'1px solid #ffcccc',
+          width:'100%'
+        }}>
+          <strong>⚠️ Error:</strong> {error}
         </div>
       )}
+      
+      {!isMetaMaskInstalled && (
+        <div style={{
+          color:'#ff9800',
+          background:'#fff3e0',
+          padding:12,
+          borderRadius:8,
+          fontSize:14,
+          border:'1px solid #ffe0b2',
+          width:'100%'
+        }}>
+          <strong>📦 MetaMask Not Found</strong>
+          <p style={{margin:'8px 0 0 0'}}>
+            Please install MetaMask extension to use blockchain features.
+            <a 
+              href="https://metamask.io/download/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{
+                display:'block',
+                marginTop:8,
+                color:'#ff9800',
+                textDecoration:'underline'
+              }}
+            >
+              Download MetaMask →
+            </a>
+          </p>
+        </div>
+      )}
+      
+      <div style={{display:'flex',gap:8,alignItems:'center',width:'100%'}}>
+        {!isConnected ? (
+          <button 
+            onClick={connect} 
+            disabled={!isMetaMaskInstalled}
+            style={{
+              padding:'10px 20px',
+              borderRadius:8,
+              background: isMetaMaskInstalled ? '#00e3ff' : '#cccccc',
+              color: isMetaMaskInstalled ? '#000' : '#666',
+              border:'none',
+              fontWeight:600,
+              cursor: isMetaMaskInstalled ? 'pointer' : 'not-allowed',
+              transition:'all 0.2s',
+              fontSize:15
+            }}
+            onMouseOver={(e) => {
+              if (isMetaMaskInstalled) e.target.style.background = '#00c8e0';
+            }}
+            onMouseOut={(e) => {
+              if (isMetaMaskInstalled) e.target.style.background = '#00e3ff';
+            }}
+          >
+            {isMetaMaskInstalled ? '🦊 Connect Wallet' : 'Install MetaMask First'}
+          </button>
+        ) : (
+          <div style={{
+            display:'flex',
+            gap:12,
+            alignItems:'center',
+            background:'#f0f0f0',
+            padding:'8px 16px',
+            borderRadius:8,
+            width:'100%',
+            justifyContent:'space-between'
+          }}>
+            <div style={{display:'flex',flexDirection:'column',gap:4}}>
+              <div style={{fontWeight:700,fontSize:14}}>
+                {String(account).slice(0,8)}...{String(account).slice(-6)}
+              </div>
+              {balance && (
+                <div style={{fontSize:12,color:'#666'}}>
+                  {parseFloat(balance).toFixed(4)} ETH
+                </div>
+              )}
+            </div>
+            <button 
+              onClick={disconnect} 
+              style={{
+                padding:'6px 12px',
+                borderRadius:6,
+                background:'#ff4444',
+                color:'white',
+                border:'none',
+                cursor:'pointer',
+                fontWeight:500,
+                fontSize:13
+              }}
+              onMouseOver={(e) => e.target.style.background = '#cc0000'}
+              onMouseOut={(e) => e.target.style.background = '#ff4444'}
+            >
+              Disconnect
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -263,8 +263,8 @@ GET    /api/tasks/{id}          # Task details
 GET    /api/metrics             # System metrics
 GET    /api/policies            # RL policies
 POST   /api/policies/promote    # Promote policy
-GET    /api/plugins             # List plugins
-POST   /api/plugins/{id}/exec   # Execute plugin
+GET    /api/plugins                      # List plugins
+POST   /api/plugins/{plugin_name}/execute   # Execute plugin
 ```
 
 **WebSocket Events:**
@@ -312,14 +312,14 @@ Full API documentation at: `http://localhost:5000/docs`
 │   ├── llm/                # LLM integration
 │   ├── rl/                 # Reinforcement learning
 │   ├── perception/         # Visual perception
-│   └── api_server.py       # Backend API
-├── autorl_project/
-│   ├── main.py             # Main orchestrator
-│   ├── api_server.py       # Production API server
-│   └── autorl-frontend/    # Frontend build
+│   ├── orchestrator.py     # Agent orchestration
+│   └── main.py             # Entry point
+├── backend_server.py       # Unified backend server
+├── master_backend.py       # Master backend with agents
+├── start_autorl.py         # Startup script
 ├── plugins/                # Extensible plugin system
 ├── agents/                 # Agent registry
-├── autorl-demo/            # Demo with mock data
+├── config.yaml             # Configuration file
 └── tests/                  # Test suites
 ```
 
@@ -331,7 +331,7 @@ Get AutoRL running in under 5 minutes!
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/autorl.git
+git clone https://github.com/YOUR_USERNAME/autorl.git
 cd autorl
 
 # Install dependencies
@@ -348,7 +348,7 @@ python start_autorl.py
 
 ```bash
 # Clone and start with Docker
-git clone https://github.com/yourusername/autorl.git
+git clone https://github.com/YOUR_USERNAME/autorl.git
 cd autorl
 
 # Build and run
@@ -367,7 +367,8 @@ Access at: http://localhost:5173
 
 **Terminal 1 - Backend:**
 ```bash
-python backend_server.py
+python master_backend.py
+# Or use backend_server.py for simpler setup
 ```
 
 **Terminal 2 - Frontend:**
@@ -411,7 +412,7 @@ server:
 
 # Or via environment variable
 export AUTORL_MODE=production
-python backend_server.py
+python master_backend.py
 ```
 
 ## 💿 Installation
@@ -432,7 +433,7 @@ python backend_server.py
 #### 1. Clone Repository
 
 ```bash
-git clone https://github.com/yourusername/autorl.git
+git clone https://github.com/YOUR_USERNAME/autorl.git
 cd autorl
 ```
 
@@ -556,7 +557,7 @@ The main configuration file (`config.yaml`) controls all aspects of the system:
 server:
   host: "0.0.0.0"              # Bind address
   port: 5000                    # API port
-  mode: "demo"                  # "demo" or "production"
+  mode: "production"            # "demo" or "production"
   debug: false                  # Debug mode
   cors_origins: ["*"]           # CORS allowed origins
 ```
@@ -596,10 +597,10 @@ devices:
 
 Add devices programmatically:
 ```python
-from src.runtime import DeviceManager, Device
+from src.runtime.device_manager import DeviceManager, Device
 
 device_manager = DeviceManager()
-await device_manager.add_device(
+device_manager.add_device(
     Device("Pixel_7", "android", is_real=True)
 )
 ```
@@ -825,7 +826,7 @@ class CustomAnalyticsPlugin(BasePlugin):
 **Usage:**
 ```python
 # Execute plugin via API
-response = requests.post('http://localhost:5000/api/plugins/custom_analytics/exec', json={
+response = requests.post('http://localhost:5000/api/plugins/custom_analytics/execute', json={
     "type": "task_completed",
     "data": {"task_id": "123", "duration": 45.2}
 })
@@ -1101,16 +1102,10 @@ Response: [
   }
 ]
 
-POST /api/plugins/{plugin_id}/exec
+POST /api/plugins/{plugin_name}/execute
 # Execute a plugin
-Body: { "input_data": {...} }
-Response: { "status": "success", "output": {...} }
-
-POST /api/plugins/{plugin_id}/enable
-# Enable a plugin
-
-POST /api/plugins/{plugin_id}/disable
-# Disable a plugin
+Body: { ...input_data... }
+Response: { "status": "success", "result": {...} }
 ```
 
 ### WebSocket API
@@ -1346,25 +1341,29 @@ The **Orchestrator** (`src/orchestrator.py`) coordinates all agents:
 
 ```python
 # Simplified workflow
-async def execute_task_with_recovery(instruction, device_id, timeout=300):
+async def execute_task_with_recovery(
+    task_description: str,
+    device_id: str,
+    timeout_seconds: int = 300
+) -> TaskState:
     # 1. Perception
     ui_state = await perception_agent.analyze_screen(device_id)
     
     # 2. Planning
-    action_plan = await planning_agent.create_plan(instruction, ui_state)
+    action_plan = await planning_agent.create_plan(task_description, ui_state)
     
     # 3. Execution
     try:
-        result = await execution_agent.execute_plan(action_plan, device_id)
-        return {"success": True, "result": result}
+        for action in action_plan['actions']:
+            success = await execution_agent.execute_action_with_retry(action, device_id)
+            if not success:
+                raise Exception(f"Action failed: {action}")
+        return TaskState(task_id=task_id, status="completed", progress=100.0)
     except Exception as error:
         # 4. Recovery
-        recovery_result = await recovery_agent.recover(error, ui_state)
-        if recovery_result.success:
-            # Retry from where we left off
-            return await execute_task_with_recovery(...)
-        else:
-            return {"success": False, "error": error}
+        await recovery_agent.handle_error(task_state, error)
+        # Retry logic here
+        return task_state
 ```
 
 ## 🔌 Plugin System
@@ -1841,7 +1840,7 @@ Response: {"status": "ok", "version": "1.0.0"}
 
 ```bash
 # Check backend logs
-python backend_server.py
+python master_backend.py
 # Look for "WebSocket connection opened" messages
 ```
 
@@ -1929,7 +1928,7 @@ logging:
 
 # Or via environment
 export LOG_LEVEL=DEBUG
-python backend_server.py
+python master_backend.py
 ```
 
 ### Getting Help
@@ -1955,8 +1954,8 @@ test_scenarios = [
 ]
 
 for scenario in test_scenarios:
-    result = await orchestrator.execute_task_with_recovery(scenario)
-    assert result["success"], f"Failed: {scenario}"
+    result = await orchestrator.execute_task_with_recovery(scenario, device_id="auto")
+    assert result.status == "completed", f"Failed: {scenario}"
 ```
 
 **Benefits:**
@@ -1979,7 +1978,7 @@ user_journey = """
 6. Take screenshot of confirmation
 """
 
-result = await execute_task(user_journey)
+result = await orchestrator.execute_task_with_recovery(user_journey, device_id="Pixel_7")
 ```
 
 ### 3. Competitive Analysis
@@ -2206,7 +2205,7 @@ Thank you to all contributors who have helped shape AutoRL! 🎉
 
 **Built with ❤️ by the AutoRL team and contributors**
 
-[Report Bug](https://github.com/yourusername/autorl/issues) · [Request Feature](https://github.com/yourusername/autorl/issues) · [Documentation](docs/) · [Discord](https://discord.gg/autorl)
+[Report Bug](https://github.com/YOUR_USERNAME/autorl/issues) · [Request Feature](https://github.com/YOUR_USERNAME/autorl/issues) · [Documentation](docs/)
 
 ---
 
