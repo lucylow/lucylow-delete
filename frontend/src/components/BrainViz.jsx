@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'framer-motion'; // eslint-disable-line no-unused-vars
 
 export default function BrainViz({ size = 260 }) {
   const pulse = { scale: [1, 1.03, 1], opacity: [0.9, 1, 0.9] };
