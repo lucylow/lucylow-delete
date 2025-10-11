@@ -4,7 +4,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 // Import page components
-import Navigation from './components/Navigation';
+import Navigation from './components/Navigation.js';
 import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
 import DeviceManager from './pages/DeviceManager';
