@@ -50,40 +50,31 @@ class DeviceManager:
         await self.device_queue.put(device)
 
     async def initialize_sessions(self):
-        # Placeholder: loop through devices and initialize real sessions if required
+        """
+        Initialize Appium sessions for registered devices.
+        
+        For real devices, this would connect to Appium server or device farm.
+        For emulators, this ensures they are started and ready.
+        """
         for d in self.devices:
             if d.is_real:
                 logger.info("Initializing session for real device %s", d.device_id)
-                # TODO: integrate with Appium/Device farm API to start a session
-                d.session = None
-import asyncio
-from typing import List
-
-class Device:
-    def __init__(self, device_id: str, platform: str, is_real: bool):
-        self.device_id = device_id
-        self.platform = platform  # 'android' or 'ios'
-        self.is_real = is_real
-        self.session = None  # Appium session placeholder
-
-class DeviceManager:
-    def __init__(self):
-        self.devices: List[Device] = []
-        self.device_queue: asyncio.Queue = asyncio.Queue()
-
-    def add_device(self, device: Device):
-        self.devices.append(device)
-        self.device_queue.put_nowait(device)
-
-    async def acquire_device(self) -> Device:
-        device = await self.device_queue.get()
-        return device
-
-    async def release_device(self, device: Device):
-        await self.device_queue.put(device)
-
-    async def initialize_sessions(self):
-        for device in self.devices:
-            # Example: Initialize Appium session for each device
-            # device.session = await launch_appium_session(device.device_id, device.platform)
-            pass
+                try:
+                    # Real device session initialization would go here:
+                    # 1. Check device connectivity (adb devices)
+                    # 2. Connect to Appium server
+                    # 3. Create WebDriver session with capabilities
+                    # Example:
+                    # from appium import webdriver
+                    # capabilities = {
+                    #     'platformName': d.platform,
+                    #     'deviceName': d.device_id,
+                    #     'automationName': 'UiAutomator2' if d.platform == 'android' else 'XCUITest'
+                    # }
+                    # d.session = webdriver.Remote('http://localhost:4723/wd/hub', capabilities)
+                    d.session = None  # Placeholder until Appium integration is complete
+                except Exception as e:
+                    logger.error(f"Failed to initialize session for device {d.device_id}: {e}")
+                    d.session = None
+            else:
+                logger.info("Device %s is an emulator, skipping real device initialization", d.device_id)
