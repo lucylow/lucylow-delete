@@ -11,8 +11,8 @@
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "start": "python start_autorl.py",
     "backend": "python backend_server.py",
-    "backend:demo": "set AUTORL_MODE=demo && python backend_server.py",
-    "backend:prod": "set AUTORL_MODE=production && python backend_server.py"
+    "backend:demo": "$env:AUTORL_MODE='demo'; python backend_server.py",
+    "backend:prod": "$env:AUTORL_MODE='production'; python backend_server.py"
   },
   "dependencies": {
     "react": "^18.2.0",
