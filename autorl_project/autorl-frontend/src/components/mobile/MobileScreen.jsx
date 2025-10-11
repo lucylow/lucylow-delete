@@ -2,7 +2,6 @@ import React, { useRef, useImperativeHandle, forwardRef, useState } from 'react'
 import GestureOverlay from './GestureOverlay';
 import AttentionHeatmap from './AttentionHeatmap';
 import OCROverlay from './OCROverlay';
-import { motion } from 'framer-motion';
 
 /*
 API (ref):
@@ -73,8 +72,6 @@ const MobileScreen = forwardRef(({ initialApp = 'banking_v1', onAction, attentio
 
   useImperativeHandle(ref, () => ({
     tap: async (x, y) => {
-      // find element at x,y relative to root
-      const el = document.elementFromPoint(x, y);
       // if within phone screen translate coordinates; but for demo we assume callers pass element ids
       if (onAction) onAction({ type: 'tap', x, y });
       return { ok: true };
