@@ -5,7 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 // Import page components
 import Navigation from './components/Navigation.js';
-import LandingPage from './pages/LandingPage';
+import AutoRLLandingPage from './pages/AutoRLLandingPage';
 import Dashboard from './pages/Dashboard';
 import DeviceManager from './pages/DeviceManager';
 import TaskExecution from './pages/TaskExecution';
@@ -135,9 +135,28 @@ function App() {
       <Web3Provider>
         <OMHAuthProvider>
           <div className="App">
-            <Navigation />
             <Routes>
-              <Route path="/" element={<LandingPage />} />
+              <Route path="/" element={<AutoRLLandingPage />} />
+              <Route path="/app/*" element={
+                <>
+                  <Navigation />
+                  <Routes>
+                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="devices" element={<DeviceManager />} />
+                    <Route path="tasks" element={<TaskExecution />} />
+                    <Route path="ai-training" element={<AITraining />} />
+                    <Route path="analytics" element={<Analytics />} />
+                    <Route path="blockchain" element={<BlockchainEnhancedDashboard />} />
+                    <Route path="marketplace" element={<Marketplace />} />
+                    <Route path="omh-integration" element={<OMHIntegrationPage />} />
+                    <Route path="docs" element={<Documentation />} />
+                    <Route path="settings" element={<Settings />} />
+                    <Route path="profile" element={<Profile />} />
+                    <Route path="*" element={<Dashboard />} />
+                  </Routes>
+                </>
+              } />
+              {/* Legacy routes for backward compatibility */}
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/devices" element={<DeviceManager />} />
               <Route path="/tasks" element={<TaskExecution />} />

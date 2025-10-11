@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { ethers } from 'ethers';
-import { CONTRACT_CONFIG, DEFAULT_CHAIN_ID } from '../blockchain/web3-config';
+import { CONTRACT_CONFIG, DEFAULT_CHAIN_ID, SUPPORTED_CHAINS } from '../blockchain/web3-config';
 
 const Web3Context = createContext(null);
 export const useWeb3 = () => useContext(Web3Context);
@@ -215,6 +215,60 @@ export const Web3Provider = ({ children }) => {
     setError(null);
   };
 
+  const switchNetwork = async (targetChainId) => {
+    if (!window.ethereum) {
+      setError('MetaMask is not installed');
+      return false;
+    }
+
+    try {
+      const chainIdHex = '0x' + targetChainId.toString(16);
+      
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: chainIdHex }],
+      });
+      
+      console.log(`Switched to chain ${targetChainId}`);
+      return true;
+    } catch (switchError) {
+      // This error code indicates that the chain has not been added to MetaMask
+      if (switchError.code === 4902) {
+        try {
+          const chainConfig = SUPPORTED_CHAINS[targetChainId];
+          if (!chainConfig) {
+            throw new Error('Chain not supported');
+          }
+
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: '0x' + targetChainId.toString(16),
+              chainName: chainConfig.name,
+              rpcUrls: [chainConfig.rpc],
+              blockExplorerUrls: chainConfig.explorer ? [chainConfig.explorer] : [],
+            }],
+          });
+          
+          return true;
+        } catch (addError) {
+          console.error('Error adding network:', addError);
+          setError('Failed to add network: ' + addError.message);
+          return false;
+        }
+      } else {
+        console.error('Error switching network:', switchError);
+        setError('Failed to switch network: ' + switchError.message);
+        return false;
+      }
+    }
+  };
+
+  const getNetworkName = () => {
+    if (!chainId) return 'Not connected';
+    return SUPPORTED_CHAINS[chainId]?.name || `Unknown (${chainId})`;
+  };
+
   return (
     <Web3Context.Provider value={{ 
       provider, 
@@ -227,7 +281,10 @@ export const Web3Provider = ({ children }) => {
       error, 
       connect, 
       disconnect,
-      isMetaMaskInstalled 
+      switchNetwork,
+      getNetworkName,
+      isMetaMaskInstalled,
+      supportedChains: SUPPORTED_CHAINS
     }}>
       {children}
     </Web3Context.Provider>

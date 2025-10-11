@@ -540,6 +540,50 @@ async def get_analytics(range: str = "7d"):
         {"type": "Other", "count": 5, "percentage": 6}
     ]
     
+    # Blockchain data (Mock MetaMask/Ethereum integration)
+    blockchain_data = {
+        "walletAddress": "0x742d35Cc6634C0532925a3b844Bc9e7595f38f3a",
+        "walletBalance": "2.45 ETH",
+        "usdValue": "$6,125.50",
+        "balanceChange": "+0.12 ETH",
+        "totalTransactions": "1,234",
+        "txChange": "+45",
+        "gasSpent": "0.84 ETH",
+        "gasChange": "-0.05 ETH",
+        "avgGasFee": "0.0068 ETH",
+        "nftTasks": "87",
+        "nftChange": "+12",
+        "contracts": "23",
+        "transactionHistory": [
+            {"date": day, "transactions": random.randint(30, 80), "automated": random.randint(20, 50)}
+            for day in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        ],
+        "gasHistory": [
+            {"date": day, "gasFee": round(random.uniform(0.01, 0.03), 4), "baseFee": round(random.uniform(0.008, 0.023), 4)}
+            for day in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        ],
+        "tokenHoldings": [
+            {"name": "ETH", "value": 2.45, "amount": "2.45 ETH", "usdValue": "6,125"},
+            {"name": "USDC", "value": 1500, "amount": "1,500 USDC", "usdValue": "1,500"},
+            {"name": "DAI", "value": 750, "amount": "750 DAI", "usdValue": "750"},
+            {"name": "LINK", "value": 250, "amount": "18.2 LINK", "usdValue": "250"},
+            {"name": "UNI", "value": 180, "amount": "32.1 UNI", "usdValue": "180"}
+        ],
+        "nftActivity": [
+            {"category": "Profile NFTs", "mints": 25, "transfers": 18, "listings": 12},
+            {"category": "Art NFTs", "mints": 15, "transfers": 22, "listings": 8},
+            {"category": "Game Items", "mints": 30, "transfers": 35, "listings": 20},
+            {"category": "Collectibles", "mints": 12, "transfers": 15, "listings": 6},
+            {"category": "Others", "mints": 8, "transfers": 10, "listings": 4}
+        ],
+        "recentContracts": [
+            {"name": "Uniswap V3 Router", "address": "0x68b3...465f", "calls": 156, "gasSpent": "0.234 ETH"},
+            {"name": "OpenSea Seaport", "address": "0x00c3...83e5", "calls": 89, "gasSpent": "0.178 ETH"},
+            {"name": "AAVE Lending Pool", "address": "0x7d2c...1b9a", "calls": 67, "gasSpent": "0.156 ETH"},
+            {"name": "ENS Registry", "address": "0x314d...a821", "calls": 34, "gasSpent": "0.067 ETH"}
+        ]
+    }
+    
     # Calculate stats
     total_successful = sum([t["successful"] for t in task_trends])
     total_failed = sum([t["failed"] for t in task_trends])
@@ -566,7 +610,8 @@ async def get_analytics(range: str = "7d"):
         "taskDistribution": task_distribution,
         "performanceMetrics": performance_metrics,
         "rlTraining": rl_training,
-        "errorAnalysis": error_analysis
+        "errorAnalysis": error_analysis,
+        "blockchain": blockchain_data
     }
 
 # Activity log endpoint

@@ -34,15 +34,15 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const menuItems = [
   { title: 'Home', path: '/', icon: <Home />, description: 'Landing page and overview' },
-  { title: 'Dashboard', path: '/dashboard', icon: <Dashboard />, description: 'Real-time system monitoring' },
-  { title: 'Device Manager', path: '/devices', icon: <Devices />, description: 'Manage Android/iOS devices' },
-  { title: 'Task Execution', path: '/tasks', icon: <PlayArrow />, description: 'Create and monitor automation tasks' },
-  { title: 'AI Training', path: '/ai-training', icon: <Psychology />, description: 'RL training and model management' },
-  { title: 'Analytics', path: '/analytics', icon: <TrendingUp />, description: 'Performance metrics and insights' },
-  { title: 'Marketplace', path: '/marketplace', icon: <Store />, description: 'Workflow plugins and extensions' },
-  { title: 'Documentation', path: '/docs', icon: <Description />, description: 'API docs and guides' },
-  { title: 'Settings', path: '/settings', icon: <Settings />, description: 'System configuration' },
-  { title: 'Profile', path: '/profile', icon: <AccountCircle />, description: 'User account' },
+  { title: 'Dashboard', path: '/app/dashboard', icon: <Dashboard />, description: 'Real-time system monitoring' },
+  { title: 'Device Manager', path: '/app/devices', icon: <Devices />, description: 'Manage Android/iOS devices' },
+  { title: 'Task Execution', path: '/app/tasks', icon: <PlayArrow />, description: 'Create and monitor automation tasks' },
+  { title: 'AI Training', path: '/app/ai-training', icon: <Psychology />, description: 'RL training and model management' },
+  { title: 'Analytics', path: '/app/analytics', icon: <TrendingUp />, description: 'Performance metrics and insights' },
+  { title: 'Marketplace', path: '/app/marketplace', icon: <Store />, description: 'Workflow plugins and extensions' },
+  { title: 'Documentation', path: '/app/docs', icon: <Description />, description: 'API docs and guides' },
+  { title: 'Settings', path: '/app/settings', icon: <Settings />, description: 'System configuration' },
+  { title: 'Profile', path: '/app/profile', icon: <AccountCircle />, description: 'User account' },
 ];
 
 const StatusIndicator = ({ label = 'OK', color = 'success' }) => (

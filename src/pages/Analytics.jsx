@@ -8,7 +8,8 @@ import {
 } from 'recharts';
 import { 
   TrendingUp, Activity, Target, Zap, Download, 
-  RefreshCw, Clock, CheckCircle, XCircle, Smartphone, FileJson
+  RefreshCw, Clock, CheckCircle, XCircle, Smartphone, FileJson,
+  Wallet, DollarSign, Send, TrendingDown, Coins, Shield
 } from 'lucide-react';
 import { useAnalytics } from '@/hooks/useAnalytics';
 
@@ -105,12 +106,45 @@ export default function Analytics() {
         />
       </div>
 
+      {/* Blockchain Metrics (Mock) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+        <MetricCard
+          icon={Wallet}
+          label="Wallet Balance"
+          value={analyticsData.blockchain?.walletBalance || "2.45 ETH"}
+          change={analyticsData.blockchain?.balanceChange || "+0.12 ETH"}
+          positive={true}
+        />
+        <MetricCard
+          icon={Send}
+          label="Transactions"
+          value={analyticsData.blockchain?.totalTransactions || "1,234"}
+          change={analyticsData.blockchain?.txChange || "+45"}
+          positive={true}
+        />
+        <MetricCard
+          icon={DollarSign}
+          label="Gas Spent"
+          value={analyticsData.blockchain?.gasSpent || "0.84 ETH"}
+          change={analyticsData.blockchain?.gasChange || "-0.05 ETH"}
+          positive={true}
+        />
+        <MetricCard
+          icon={Coins}
+          label="NFT Tasks"
+          value={analyticsData.blockchain?.nftTasks || "87"}
+          change={analyticsData.blockchain?.nftChange || "+12"}
+          positive={true}
+        />
+      </div>
+
       {/* Main Analytics Tabs */}
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
           <TabsTrigger value="devices">Devices</TabsTrigger>
+          <TabsTrigger value="blockchain">Blockchain</TabsTrigger>
           <TabsTrigger value="training">RL Training</TabsTrigger>
           <TabsTrigger value="errors">Errors</TabsTrigger>
         </TabsList>
@@ -306,6 +340,202 @@ export default function Analytics() {
           </Card>
         </TabsContent>
 
+        {/* Blockchain Tab */}
+        <TabsContent value="blockchain" className="space-y-6">
+          {/* Mock MetaMask Connection Status */}
+          <Card className="bg-gradient-to-r from-orange-500/10 to-purple-500/10 border-orange-500/20">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center">
+                    <Wallet className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold flex items-center gap-2">
+                      MetaMask Connected
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {analyticsData.blockchain?.walletAddress || "0x742d...8f3a"}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold">{analyticsData.blockchain?.walletBalance || "2.45 ETH"}</p>
+                  <p className="text-sm text-muted-foreground">
+                    ≈ ${analyticsData.blockchain?.usdValue || "$6,125.50"}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <MetricCard
+              icon={Send}
+              label="Total Transactions"
+              value={analyticsData.blockchain?.totalTransactions || "1,234"}
+              change="+45 this week"
+              positive={true}
+            />
+            <MetricCard
+              icon={DollarSign}
+              label="Avg Gas Fee"
+              value={analyticsData.blockchain?.avgGasFee || "0.0068 ETH"}
+              change="-12% lower"
+              positive={true}
+            />
+            <MetricCard
+              icon={Shield}
+              label="Smart Contracts"
+              value={analyticsData.blockchain?.contracts || "23"}
+              change="+5 deployed"
+              positive={true}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Transaction History */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Transaction Volume</CardTitle>
+                <CardDescription>Daily blockchain transactions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={analyticsData.blockchain?.transactionHistory || generateMockTxHistory()}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Area type="monotone" dataKey="transactions" stroke="#ff9800" fill="#ff9800" fillOpacity={0.6} />
+                    <Area type="monotone" dataKey="automated" stroke="#00e676" fill="#00e676" fillOpacity={0.6} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Gas Usage Trends */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Gas Usage Trends</CardTitle>
+                <CardDescription>ETH spent on gas fees</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={analyticsData.blockchain?.gasHistory || generateMockGasHistory()}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="gasFee" stroke="#2196f3" strokeWidth={2} />
+                    <Line type="monotone" dataKey="baseFee" stroke="#9c27b0" strokeWidth={2} strokeDasharray="5 5" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Token Holdings */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Token Holdings & Portfolio</CardTitle>
+              <CardDescription>Distribution of assets in wallet</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={analyticsData.blockchain?.tokenHoldings || generateMockTokenHoldings()}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                      outerRadius={100}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {(analyticsData.blockchain?.tokenHoldings || generateMockTokenHoldings()).map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+
+                <div className="space-y-3">
+                  {(analyticsData.blockchain?.tokenHoldings || generateMockTokenHoldings()).map((token, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
+                        <div>
+                          <p className="font-semibold">{token.name}</p>
+                          <p className="text-sm text-muted-foreground">{token.amount}</p>
+                        </div>
+                      </div>
+                      <p className="font-bold">${token.usdValue}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* NFT Activity */}
+          <Card>
+            <CardHeader>
+              <CardTitle>NFT Automation Activity</CardTitle>
+              <CardDescription>Automated NFT tasks and interactions</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={analyticsData.blockchain?.nftActivity || generateMockNFTActivity()}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="category" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="mints" fill="#00e676" />
+                  <Bar dataKey="transfers" fill="#2196f3" />
+                  <Bar dataKey="listings" fill="#ff9800" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Smart Contract Interactions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Smart Contract Interactions</CardTitle>
+              <CardDescription>Recent automated contract calls</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {(analyticsData.blockchain?.recentContracts || generateMockContracts()).map((contract, index) => (
+                  <div key={index} className="flex items-center justify-between p-4 rounded-lg border">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Shield className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-semibold">{contract.name}</p>
+                        <p className="text-sm text-muted-foreground">{contract.address}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold">{contract.calls} calls</p>
+                      <p className="text-sm text-muted-foreground">{contract.gasSpent}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* RL Training Tab */}
         <TabsContent value="training" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -450,6 +680,72 @@ export default function Analytics() {
       </Tabs>
     </div>
   );
+}
+
+// Mock data generators for blockchain
+function generateMockTxHistory() {
+  return Array.from({ length: 7 }, (_, i) => ({
+    date: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i],
+    transactions: Math.floor(Math.random() * 50) + 30,
+    automated: Math.floor(Math.random() * 30) + 20
+  }));
+}
+
+function generateMockGasHistory() {
+  return Array.from({ length: 7 }, (_, i) => ({
+    date: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i],
+    gasFee: (Math.random() * 0.02 + 0.01).toFixed(4),
+    baseFee: (Math.random() * 0.015 + 0.008).toFixed(4)
+  }));
+}
+
+function generateMockTokenHoldings() {
+  return [
+    { name: 'ETH', value: 2.45, amount: '2.45 ETH', usdValue: '6,125' },
+    { name: 'USDC', value: 1500, amount: '1,500 USDC', usdValue: '1,500' },
+    { name: 'DAI', value: 750, amount: '750 DAI', usdValue: '750' },
+    { name: 'LINK', value: 250, amount: '18.2 LINK', usdValue: '250' },
+    { name: 'UNI', value: 180, amount: '32.1 UNI', usdValue: '180' }
+  ];
+}
+
+function generateMockNFTActivity() {
+  return [
+    { category: 'Profile NFTs', mints: 25, transfers: 18, listings: 12 },
+    { category: 'Art NFTs', mints: 15, transfers: 22, listings: 8 },
+    { category: 'Game Items', mints: 30, transfers: 35, listings: 20 },
+    { category: 'Collectibles', mints: 12, transfers: 15, listings: 6 },
+    { category: 'Others', mints: 8, transfers: 10, listings: 4 }
+  ];
+}
+
+function generateMockContracts() {
+  return [
+    { 
+      name: 'Uniswap V3 Router', 
+      address: '0x68b3...465f', 
+      calls: 156, 
+      gasSpent: '0.234 ETH' 
+    },
+    { 
+      name: 'OpenSea Seaport', 
+      address: '0x00c3...83e5', 
+      calls: 89, 
+      gasSpent: '0.178 ETH' 
+    },
+    { 
+      name: 'AAVE Lending Pool', 
+      address: '0x7d2c...1b9a', 
+      calls: 67, 
+      gasSpent: '0.156 ETH' 
+    },
+    { 
+      name: 'ENS Registry', 
+      address: '0x314d...a821', 
+      calls: 34, 
+      gasSpent: '0.067 ETH' 
+    }
+  ];
 }
 
 // MetricCard Component
