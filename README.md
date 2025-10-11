@@ -1,219 +1,374 @@
-# Lucy Low - Mobile Responsive Portfolio
+# AutoRL - Intelligent Mobile Automation Platform
 
-A modern, fully responsive portfolio website built with **React**, **Tailwind CSS**, and **Vite**. This website is **Lovable-compatible** and adapts seamlessly to all screen sizes, from mobile phones to desktop computers.
+An advanced AI-powered mobile automation system that uses Reinforcement Learning and Large Language Models to autonomously execute tasks on mobile devices.
 
-## ✅ FIXED FOR LOVABLE - October 2025
+## 🎯 Project Overview
 
-**All errors resolved!** This project is now 100% ready for Lovable deployment.
+AutoRL is a comprehensive platform that combines:
+- **AI Agents**: Perception, Planning, Execution, and Recovery agents working in coordination
+- **Reinforcement Learning**: Adaptive policies that learn and improve over time
+- **LLM Integration**: Natural language task understanding and action planning
+- **Real-time Dashboard**: Modern React frontend for monitoring and control
+- **Plugin System**: Extensible architecture for custom functionality
+- **Multi-device Support**: Simultaneous automation across Android and iOS devices
 
-### Recent Fixes:
-- ✅ Updated `lucide-react` to v0.451.0 (fixed peer dependency conflict)
-- ✅ Fixed `react-use` version in frontend folder
-- ✅ All dependencies installed successfully
-- ✅ Build tested and working perfectly
-- ✅ Development server running smoothly
+## 🏗️ Architecture
 
-**Quick Start:** See `LOVABLE_QUICK_START.md` for deployment instructions!
-
-## 🎯 Lovable Compatibility
-
-This project is fully compatible with [Lovable.dev](https://lovable.dev):
-- ✅ Built with **React 18** - Lovable's primary framework
-- ✅ Styled with **Tailwind CSS** - Lovable's styling framework
-- ✅ Uses **Vite** - Lovable's build tool
-- ✅ Component-based architecture
-- ✅ Modern ES6+ JavaScript
-- ✅ Fully responsive design
-- ✅ Ready for OpenAPI backend integration
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    React Frontend                           │
+│  (Dashboard, Tasks, Devices, Analytics, AI Training)        │
+└─────────────────┬───────────────────────────────────────────┘
+                  │ WebSocket + REST API
+┌─────────────────▼───────────────────────────────────────────┐
+│                 Backend API Server                          │
+│  (Flask/FastAPI - Task Queue, Metrics, Device Management)   │
+└─────────────────┬───────────────────────────────────────────┘
+                  │
+┌─────────────────▼───────────────────────────────────────────┐
+│                  AI Orchestrator                            │
+│  ┌──────────────┬────────────┬──────────────┬─────────┐    │
+│  │  Perception  │  Planning  │  Execution   │ Recovery│    │
+│  │    Agent     │   Agent    │    Agent     │  Agent  │    │
+│  └──────────────┴────────────┴──────────────┴─────────┘    │
+│                         │                                   │
+│              ┌──────────┴──────────┐                       │
+│              │  Plugin System      │                       │
+│              │  (Vision, OMH, etc) │                       │
+│              └─────────────────────┘                       │
+└─────────────────┬───────────────────────────────────────────┘
+                  │ Appium Protocol
+┌─────────────────▼───────────────────────────────────────────┐
+│            Mobile Devices (Android/iOS)                     │
+│     ┌────────────┐  ┌────────────┐  ┌────────────┐        │
+│     │  Emulator  │  │ Real Device│  │  Emulator  │        │
+│     └────────────┘  └────────────┘  └────────────┘        │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ## 🚀 Features
 
-### Responsive Design
-- **Mobile-First Approach**: Designed for mobile devices first, enhanced for larger screens
-- **Fluid Layouts**: Uses CSS Grid and Flexbox via Tailwind utilities
-- **Responsive Breakpoints**: Optimized for all screen sizes (sm, md, lg, xl)
-- **Touch-Friendly**: Optimized for mobile interactions
+### Intelligent Automation
+- **Natural Language Tasks**: Describe tasks in plain English
+- **Visual Perception**: Screenshot analysis and OCR for UI understanding
+- **Smart Planning**: LLM-powered action sequence generation
+- **Error Recovery**: Automatic detection and recovery from failures
+- **Learning System**: Continuous improvement through RL policies
 
-### Interactive Components
-- **Header**: Fixed navigation with hamburger menu for mobile
-- **Hero**: Eye-catching introduction with gradient background
-- **About**: Two-column layout with skills showcase
-- **Projects**: Grid layout with hover effects and project cards
-- **Contact**: Functional form with validation
-- **Footer**: Multi-column footer with social links
-- **Back to Top**: Smooth scroll button
+### Real-time Monitoring
+- **Live Dashboard**: Monitor task execution in real-time
+- **Device Status**: Track all connected devices and their states
+- **Performance Metrics**: Success rates, execution times, and trends
+- **Activity Logs**: Detailed event tracking and debugging
 
-### Modern Tech Stack
-- ⚛️ React 18 with Hooks (useState, useEffect, useRef)
-- 🎨 Tailwind CSS for styling
-- ⚡ Vite for fast development and building
-- 🎭 Lucide React for icons
-- 📱 Fully responsive design
-- ♿ Accessible navigation and forms
+### Extensibility
+- **Plugin Architecture**: Easy integration of custom functionality
+- **Policy Management**: Hot-swap RL policies without downtime
+- **Shadow Mode**: Test new policies safely alongside production
+- **API-First Design**: RESTful and WebSocket APIs for integration
 
 ## 📂 Project Structure
 
 ```
-├── index.html              # Main HTML entry point
-├── package.json            # Dependencies and scripts
-├── vite.config.js          # Vite configuration
-├── tailwind.config.js      # Tailwind customization
-├── postcss.config.js       # PostCSS configuration
 ├── src/
-│   ├── main.jsx           # React entry point
-│   ├── App.jsx            # Main App component
-│   ├── index.css          # Tailwind imports & global styles
-│   └── components/
-│       ├── Header.jsx     # Navigation header
-│       ├── Hero.jsx       # Hero section
-│       ├── About.jsx      # About section
-│       ├── Projects.jsx   # Projects showcase
-│       ├── Contact.jsx    # Contact form
-│       ├── Footer.jsx     # Footer
-│       └── BackToTop.jsx  # Scroll to top button
-└── README.md              # Documentation
+│   ├── components/          # React UI components
+│   ├── pages/              # Dashboard pages
+│   ├── agent_service/      # AI agent implementations
+│   ├── runtime/            # Device and task management
+│   ├── llm/                # LLM integration
+│   ├── rl/                 # Reinforcement learning
+│   ├── perception/         # Visual perception
+│   └── api_server.py       # Backend API
+├── autorl_project/
+│   ├── main.py             # Main orchestrator
+│   ├── api_server.py       # Production API server
+│   └── autorl-frontend/    # Frontend build
+├── plugins/                # Extensible plugin system
+├── agents/                 # Agent registry
+├── autorl-demo/            # Demo with mock data
+└── tests/                  # Test suites
 ```
 
 ## 🛠️ Getting Started
 
 ### Prerequisites
-- Node.js 16+ and npm/yarn
+- **Node.js** 16+ (for frontend)
+- **Python** 3.9+ (for backend)
+- **Appium Server** (for device automation)
+- **Android SDK** or **Xcode** (for emulators)
 
 ### Installation
 
-1. **Install dependencies**:
+#### 1. Install Dependencies
+
+**Backend:**
+```bash
+pip install -r requirements.txt
+```
+
+**Frontend:**
 ```bash
 npm install
 ```
 
-2. **Start development server**:
+#### 2. Start Services
+
+**Terminal 1 - Backend API Server:**
+```bash
+python autorl_project/api_server.py
+```
+
+**Terminal 2 - Frontend Development Server:**
 ```bash
 npm run dev
 ```
 
-3. **Open in browser**:
+**Terminal 3 - Appium Server (if using real devices):**
+```bash
+appium
+```
+
+#### 3. Access Dashboard
 ```
 http://localhost:5173
 ```
 
-### Build for Production
+### Quick Demo (Mock Mode)
+
+For testing without real devices:
 
 ```bash
-npm run build
+# Terminal 1 - Demo Backend
+cd autorl-demo/backend
+python app.py
+
+# Terminal 2 - Frontend (point to demo backend)
+npm run dev
 ```
 
-### Preview Production Build
+## 🔧 Configuration
+
+### Environment Variables
+
+Create a `.env` file:
 
 ```bash
-npm run preview
+# Backend
+APPIUM_SERVER_URL=http://localhost:4723/wd/hub
+DEVICE_MODE=appium  # or 'mock' for demo mode
+API_BASE_URL=http://localhost:5000
+
+# Frontend
+VITE_API_BASE_URL=http://localhost:5000/api
+VITE_WS_URL=ws://localhost:5000/ws
+
+# LLM (optional)
+OPENAI_API_KEY=your_key_here
 ```
 
-## 🎨 Customization
+### Device Configuration
 
-### Colors
-Update Tailwind colors in `tailwind.config.js`:
-```javascript
-theme: {
-  extend: {
-    colors: {
-      primary: '#6c63ff',
-      secondary: '#4a44b5',
-      accent: '#ff6584',
-    }
-  }
-}
+Edit `autorl_project/main.py` to add your devices:
+
+```python
+await device_manager.add_device(Device("emulator-5554", "android", False))
+await device_manager.add_device(Device("iPhone 15", "ios", False))
 ```
 
-### Content
-Edit mock data directly in the component files:
-- **Hero**: Edit `src/components/Hero.jsx`
-- **About**: Update skills array in `src/components/About.jsx`
-- **Projects**: Modify projects array in `src/components/Projects.jsx`
-- **Contact**: Update contact info in `src/components/Contact.jsx`
+## 📊 Key Components
 
-### Styling
-All components use Tailwind utility classes. Modify classes directly in JSX:
-```jsx
-<div className="bg-primary text-white p-4 rounded-lg hover:bg-secondary">
-  Content
-</div>
+### Frontend (React + Tailwind)
+- **Dashboard**: Real-time task monitoring and system metrics
+- **Tasks**: Create and manage automation tasks
+- **Devices**: Device connection and status management
+- **Analytics**: Performance tracking and visualization
+- **AI Training**: RL policy management and monitoring
+
+### Backend APIs
+
+#### REST Endpoints
+- `GET /api/health` - Health check
+- `GET /api/devices` - List all devices
+- `GET /api/tasks` - Get task history
+- `POST /api/tasks` - Create new task
+- `GET /api/metrics` - Get system metrics
+- `GET /api/policies` - List RL policies
+- `POST /api/policies/promote` - Promote policy to active
+
+#### WebSocket Events
+- `perception` - UI analysis updates
+- `planning` - Action plan generation
+- `execution_start` - Task execution begins
+- `error` - Error occurred
+- `recovery_*` - Recovery process updates
+- `completed` - Task completed
+- `memory_saved` - Learning update stored
+
+### AI Agents
+
+#### Perception Agent
+- Screenshot capture
+- OCR text extraction
+- UI element detection
+- Screen state analysis
+
+#### Planning Agent
+- LLM-powered action planning
+- Natural language understanding
+- Context-aware sequencing
+- Confidence scoring
+
+#### Execution Agent
+- Action execution with retries
+- Element interaction
+- Timing management
+- State verification
+
+#### Recovery Agent
+- Error detection
+- Root cause analysis
+- Recovery plan generation
+- Fallback strategies
+
+## 🔌 Plugin System
+
+Create custom plugins by extending `BasePlugin`:
+
+```python
+from plugins.base_plugin import BasePlugin
+
+class MyPlugin(BasePlugin):
+    def initialize(self, config):
+        # Setup code
+        pass
+    
+    def process(self, input_data):
+        # Plugin logic
+        return {"result": "success"}
+    
+    def shutdown(self):
+        # Cleanup code
+        pass
 ```
 
-## 📱 Responsive Breakpoints
+Place plugins in the `plugins/` directory for automatic discovery.
 
-Tailwind breakpoints used:
-- **sm**: 640px (small devices)
-- **md**: 768px (tablets)
-- **lg**: 1024px (desktops)
-- **xl**: 1280px (large desktops)
+## 📈 Metrics & Monitoring
 
-## 🎓 Key React Features Used
+### Prometheus Metrics
+Available at `http://localhost:8000/metrics`
 
-### Hooks
-- `useState` - Managing component state (menu, form, visibility)
-- `useEffect` - Side effects (scroll listeners, intersection observers)
-- `useRef` - DOM references for scroll animations
+- `autorl_task_success_total` - Successful task count
+- `autorl_task_failure_total` - Failed task count
+- `autorl_tasks_in_progress` - Currently running tasks
+- `autorl_avg_task_runtime_seconds` - Average execution time
 
-### Features
-- Intersection Observer API for scroll animations
-- Smooth scrolling navigation
-- Form handling with controlled components
-- Event listeners for interactivity
-- Conditional rendering and styling
+### Activity Logging
+- Structured JSON logs in `logs/`
+- Sensitive data masking
+- Secure audit logs for critical events
 
-## 📝 Mock Data
+## 🧪 Testing
 
-All sections display **real mock data** to showcase the design:
-
-### About Section
-- Professional description
-- 8 skill tags (HTML/CSS, JavaScript, React, etc.)
-- Profile image
-
-### Projects Section
-- 3 complete project cards with:
-  - Title and description
-  - Technology tags
-  - Project images
-  - Demo and source code links
-
-### Contact Section
-- Email, phone, location info
-- Social media links (GitHub, LinkedIn, Twitter, Dribbble)
-- Functional contact form
-
-## 🌟 Lovable Integration Tips
-
-To use this project in Lovable:
-
-1. **Import the project** directly into Lovable
-2. **Connect a backend** using OpenAPI endpoints
-3. **Add database integration** with Supabase (if needed)
-4. **Deploy** directly from Lovable platform
-
-All components are modular and easy to extend with additional features.
-
-## 🚀 Deployment
-
-### Deploy to GitHub Pages
+### Run Tests
 ```bash
-npm run build
-# Deploy the 'dist' folder
+# All tests
+pytest
+
+# Specific test suite
+pytest tests/test_error_handling_basic.py
+pytest tests/test_agent_service.py
+
+# With coverage
+pytest --cov=src tests/
 ```
 
-### Deploy to Netlify/Vercel
-1. Connect your repository
-2. Build command: `npm run build`
-3. Publish directory: `dist`
+### Mock Integration Testing
+```bash
+# Start mock server
+cd autorl-demo/backend
+python app.py
 
-## 📧 Contact
+# Run integration tests
+pytest tests/test_automation_suite.py
+```
 
-For questions or customization requests, feel free to reach out!
+## 🚢 Deployment
+
+### Docker
+
+```bash
+# Build and run all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+### Production Setup
+
+1. Configure environment variables
+2. Set up Prometheus for monitoring
+3. Configure device farm or cloud device provider
+4. Enable secure logging and audit trails
+5. Set up load balancing for API server
+
+See `DEPLOYMENT_GUIDE.md` for detailed instructions.
+
+## 📚 Documentation
+
+- **Quick Start**: `QUICK_START.md`
+- **Error Handling**: `ERROR_HANDLING_GUIDE.md`
+- **OMH Integration**: `OMH_INTEGRATION_GUIDE.md`
+- **Deployment**: `DEPLOYMENT_GUIDE.md`
+- **Production Readiness**: `PRODUCTION_ENHANCEMENTS.md`
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these guidelines:
+
+1. Fork the repository
+2. Create a feature branch
+3. Write tests for new functionality
+4. Ensure all tests pass
+5. Submit a pull request
+
+## 📝 Use Cases
+
+- **Mobile App Testing**: Automated regression testing
+- **User Flow Validation**: End-to-end journey testing
+- **Performance Monitoring**: Real-world performance metrics
+- **Accessibility Testing**: Screen reader and interaction testing
+- **Data Collection**: User interaction patterns and analytics
+- **Competitive Analysis**: Monitor competitor app features
+
+## 🔐 Security
+
+- Sensitive data masking in logs
+- Secure credential storage
+- API authentication support
+- Audit trail for critical operations
+- Plugin sandboxing
 
 ## 📄 License
 
-This project is open source and available for personal and commercial use.
+This project is open source and available under the MIT License.
+
+## 🙏 Acknowledgments
+
+Built with:
+- **React** - Frontend framework
+- **Tailwind CSS** - Styling
+- **Flask/FastAPI** - Backend APIs
+- **Appium** - Mobile automation
+- **PyTorch** - Reinforcement learning
+- **OpenAI** - LLM integration
 
 ---
 
-**Built with ❤️ using React, Tailwind CSS, and Vite**
+**Built with ❤️ for intelligent mobile automation**
+
+For questions, issues, or feature requests, please open a GitHub issue.

@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle, Clock, Smartphone, Zap, Activity } from 'lucide-react'
 import { MetricCard } from '@/components/MetricCard'
 import { TaskExecutionView } from '@/components/TaskExecutionView'
-import { DeviceStatusPanel } from '@/components/DeviceStatusPanel'
+import { DeviceStatusPanel } from '@/components/ui/DeviceStatusPanel'
 import { EmptyState } from '@/components/EmptyState'
-import { DashboardSkeleton } from '@/components/DashboardSkeleton'
+import { DashboardSkeleton } from '@/components/ui/DashboardSkeleton'
 import { TaskControlPanel } from '@/components/TaskControlPanel'
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+import { apiService } from '@/services/api'
+import { useWebSocket } from '@/hooks/useWebSocket'
 
 export default function Dashboard() {
   const [systemStatus, setSystemStatus] = useState('active')
@@ -27,50 +27,44 @@ export default function Dashboard() {
     tasks_in_progress: 0
   })
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setError(null)
-      const [devicesRes, tasksRes, metricsRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/devices`).catch(() => null),
-        fetch(`${API_BASE_URL}/tasks`).catch(() => null),
-        fetch(`${API_BASE_URL}/metrics`).catch(() => null)
+      
+      // Use API service for all calls
+      const [devicesData, tasksData, metricsData] = await Promise.all([
+        apiService.getDevices().catch(() => []),
+        apiService.getTasks().catch(() => []),
+        apiService.getMetrics().catch(() => ({
+          total_tasks_success: 0,
+          total_tasks_failure: 0,
+          tasks_in_progress: 0,
+          avg_task_runtime_seconds: 0,
+          success_rate: 0
+        }))
       ])
-
-      const devicesData = devicesRes?.ok ? await devicesRes.json() : [
-        { id: 'android_pixel_7', platform: 'Android', status: 'connected', battery: 85 },
-        { id: 'iphone_14', platform: 'iOS', status: 'connected', battery: 92 }
-      ]
-      
-      const tasksData = tasksRes?.ok ? await tasksRes.json() : []
-      
-      const metricsData = metricsRes?.ok ? await metricsRes.json() : {
-        total_tasks_success: 47,
-        total_tasks_failure: 3,
-        tasks_in_progress: 0
-      }
-
-      const totalTasks = metricsData.total_tasks_success + metricsData.total_tasks_failure
-      const successRate = totalTasks > 0 ? ((metricsData.total_tasks_success / totalTasks) * 100) : 0
 
       setDevices(devicesData)
       setMetrics({
         tasksCompleted: metricsData.total_tasks_success,
-        successRate: successRate,
-        avgExecutionTime: 23.4,
+        successRate: metricsData.success_rate,
+        avgExecutionTime: metricsData.avg_task_runtime_seconds || 23.4,
         activeDevices: devicesData.length,
         ...metricsData
       })
       setSystemStatus(metricsData.tasks_in_progress > 0 ? 'active' : 'idle')
       
-      if (tasksData.length > 0 && tasksData[0].status === 'running') {
+      // Check for running tasks
+      const runningTask = tasksData.find(t => t.status === 'running')
+      if (runningTask) {
         setCurrentTask({
-          description: tasksData[0].name,
+          description: runningTask.instruction || runningTask.name,
           currentStep: 1,
           totalSteps: 5,
-          currentAction: tasksData[0].name,
-          deviceId: tasksData[0].device || 'Unknown',
+          currentAction: runningTask.instruction || runningTask.name,
+          deviceId: runningTask.device_id || 'Unknown',
           activeAgent: 'AutoRL Agent',
-          duration: tasksData[0].duration || '0'
+          duration: runningTask.duration || '0'
         })
       } else {
         setCurrentTask(null)
@@ -81,13 +75,57 @@ export default function Dashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  // Handle WebSocket messages
+  const handleWebSocketMessage = useCallback((message) => {
+    console.log('📨 Dashboard received WebSocket message:', message)
+    
+    // Update current task based on WebSocket events
+    if (message.event === 'task_started') {
+      setCurrentTask({
+        description: message.instruction,
+        currentStep: 1,
+        totalSteps: 5,
+        currentAction: 'Starting task...',
+        deviceId: message.device_id || 'auto',
+        activeAgent: 'AutoRL Agent',
+        duration: '0s'
+      })
+      setSystemStatus('active')
+    } else if (message.event === 'perception') {
+      setCurrentTask(prev => prev ? {...prev, currentAction: message.text, currentStep: 1} : null)
+    } else if (message.event === 'planning') {
+      setCurrentTask(prev => prev ? {...prev, currentAction: message.text, currentStep: 2} : null)
+    } else if (message.event === 'execution_start') {
+      setCurrentTask(prev => prev ? {...prev, currentAction: message.text, currentStep: 3} : null)
+    } else if (message.event === 'error') {
+      setCurrentTask(prev => prev ? {...prev, currentAction: `⚠️ ${message.text}`, currentStep: 4} : null)
+    } else if (message.event === 'recovery_execute') {
+      setCurrentTask(prev => prev ? {...prev, currentAction: message.text, currentStep: 4} : null)
+    } else if (message.event === 'completed') {
+      setCurrentTask(prev => prev ? {...prev, currentAction: '✅ Completed', currentStep: 5} : null)
+      // Refresh data after completion
+      setTimeout(() => {
+        fetchData()
+        setCurrentTask(null)
+        setSystemStatus('idle')
+      }, 2000)
+    } else if (message.event === 'task_failed') {
+      setCurrentTask(null)
+      setSystemStatus('idle')
+      fetchData()
+    }
+  }, [fetchData])
+
+  // WebSocket connection
+  const { isConnected } = useWebSocket(handleWebSocketMessage)
 
   useEffect(() => {
     fetchData()
-    const interval = setInterval(fetchData, 5000)
+    const interval = setInterval(fetchData, 10000) // Poll less frequently with WebSocket
     return () => clearInterval(interval)
-  }, [])
+  }, [fetchData])
 
   if (loading) return <DashboardSkeleton />
   if (error) return <div className="p-6 text-center text-destructive">{error}</div>
@@ -102,10 +140,16 @@ export default function Dashboard() {
               Intelligent Mobile Automation • {new Date().toLocaleString()}
             </p>
           </div>
-          <Badge variant={systemStatus === 'active' ? 'default' : 'destructive'}>
-            <Activity className="w-4 h-4 mr-1" />
-            {systemStatus === 'active' ? 'System Active' : 'System Idle'}
-          </Badge>
+          <div className="flex items-center gap-3">
+            <Badge variant={isConnected ? 'outline' : 'secondary'} className="text-xs">
+              <span className={`w-2 h-2 rounded-full mr-1 ${isConnected ? 'bg-green-500' : 'bg-gray-400'}`}></span>
+              {isConnected ? 'WebSocket Connected' : 'WebSocket Disconnected'}
+            </Badge>
+            <Badge variant={systemStatus === 'active' ? 'default' : 'destructive'}>
+              <Activity className="w-4 h-4 mr-1" />
+              {systemStatus === 'active' ? 'System Active' : 'System Idle'}
+            </Badge>
+          </div>
         </div>
       </div>
 
