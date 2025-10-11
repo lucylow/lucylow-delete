@@ -2,8 +2,8 @@
 import { createTheme } from '@mui/material/styles';
 
 const primary = '#00e3ff';
-const accent = '#00bcd4';
-const navyDark = '#061226';
+// const accent = '#00bcd4'; // Reserved for future use
+// const navyDark = '#061226'; // Reserved for future use
 const card = '#0b2133';
 
 const theme = createTheme({

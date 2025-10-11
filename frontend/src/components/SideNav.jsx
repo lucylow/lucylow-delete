@@ -5,7 +5,7 @@ import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import BuildIcon from '@mui/icons-material/Build';
 
-export default function SideNav({ open = true, onSelect = () => {}, current = 'dashboard' }) {
+export default function SideNav({ onSelect = () => {}, current = 'dashboard' }) {
   const items = [
     { id: 'dashboard', label: 'Dashboard', icon: <DashboardIcon /> },
     { id: 'devices', label: 'Devices', icon: <PhoneIphoneIcon /> },

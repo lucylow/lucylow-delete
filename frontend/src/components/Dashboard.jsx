@@ -11,7 +11,6 @@ import VoiceControl from './VoiceControl';
 import { MockApi } from '../mock/mockApi';
 
 export default function DashboardRoot() {
-  const [darkMode, setDarkMode] = useState(true);
   const [events, setEvents] = useState([]);
   const [devicePath, setDevicePath] = useState('/mock/mobile1');
   const [perfData, setPerfData] = useState([]);
@@ -35,7 +34,7 @@ export default function DashboardRoot() {
     setDevicePath(p => p === '/mock/mobile1' ? '/mock/mobile2' : '/mock/mobile1');
   };
 
-  const onTaskCreate = (desc, steps) => {
+  const onTaskCreate = () => {
     // quick feedback
     startTask();
   };

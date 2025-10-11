@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button } from '@mui/material';
 
 export default function DevicePane({ devicePath, toggleDevicePath }) {
-  const base = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  const base = (typeof process !== 'undefined' && process.env.REACT_APP_API_URL) || 'http://localhost:5000';
   const src = base + devicePath;
   return (
     <Box>
